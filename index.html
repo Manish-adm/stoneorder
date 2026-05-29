@@ -118,10 +118,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 .ibtn{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;background:white;cursor:pointer;font-size:13px;transition:all .2s;flex-shrink:0;}
 .ibtn:hover{border-color:var(--red);background:#FEF0F0;}
 .ibtn.wa{border-color:#25D366;background:#F0FFF4;}.ibtn.wa:hover{background:#25D366;}
-.ibtn.edit{border-color:var(--blue);background:#E3F2FD;}.ibtn.edit:hover{background:var(--blue);}
-.ibtn.del{border-color:#b71c1c;background:#FFEBEE;}.ibtn.del:hover{background:#b71c1c;}
-.ibtn.pay{border-color:var(--green);background:#E8F5E9;}.ibtn.pay:hover{background:var(--green);}
-.ibtn.status{border-color:var(--orange);background:#FFF3E0;}.ibtn.status:hover{background:var(--orange);}
+
 .ibtn.pdf{border-color:#7B1FA2;background:#F3E5F5;}.ibtn.pdf:hover{background:#7B1FA2;}
 
 /* TABLE */
@@ -189,18 +186,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 .err-bar button{background:none;border:none;color:#b71c1c;font-size:16px;cursor:pointer;margin-left:auto;}
 .cust-banner{background:#E3F2FD;border-bottom:2px solid #90CAF9;padding:8px 16px;font-size:12px;color:#0D47A1;}
 
-/* QUICK ACTION MODALS */
-.qa-modal{background:white;border-radius:14px 14px 0 0;width:100%;max-width:480px;padding:20px;transform:translateY(40px);transition:transform .25s;box-shadow:0 -8px 40px rgba(0,0,0,.3);}
-.ov.open .qa-modal{transform:translateY(0);}
-.qa-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
-.qa-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
-.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-.sbtn{padding:12px;border-radius:8px;border:2px solid var(--border);background:white;cursor:pointer;text-align:left;transition:all .2s;}
-.sbtn:hover{border-color:var(--red);}
-.sbtn.sel{border-color:var(--red);background:#FEF0F0;}
-.sbtn .st{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-.sbtn .sd{font-size:10px;color:var(--muted);margin-top:2px;}
-.pay-inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 
 /* ANALYTICS PAGE */
 .analytics-page{padding:14px 16px;}
@@ -256,8 +241,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
   .ig{grid-template-columns:1fr;}
   .card-grid{grid-template-columns:1fr;}
   .hright .sync-dot,.hright .user-badge{display:none;}
-  .status-grid{grid-template-columns:1fr 1fr;}
-}
+  }
 @media(max-width:400px){
   .form-row-3{grid-template-columns:1fr;}
 }
@@ -286,10 +270,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
   <div class="hright">
     <span class="sync-dot" id="syncDot">⬤ ...</span>
     <div class="user-badge"><span class="urole" id="urole">—</span><strong id="uname">—</strong></div>
-    <button class="btn btn-ghost" onclick="loadOrders()" id="refreshBtn" style="display:none">↻</button>
-    <button class="btn btn-green" onclick="openPendingAll()" id="pendingBtn" style="display:none">💬</button>
-    <button class="btn btn-red" onclick="openAddModal()" id="addBtn" style="display:none">+ Order</button>
-    <button class="btn-logout" onclick="logout()">Out</button>
+    <button class="btn btn-ghost" onclick="loadOrders()" id="refreshBtn" style="display:none">↻ Refresh</button>
+    <button class="btn btn-green" onclick="openPendingAll()" id="pendingBtn" style="display:none">💬 Pending</button>
+    <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
 </div>
 
@@ -376,100 +359,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
   </div>
 </div>
 
-<!-- QUICK STATUS MODAL -->
-<div class="ov" id="statusOv" onclick="if(event.target===this)closeStatusModal()">
-  <div class="qa-modal">
-    <div class="modal-handle" style="margin-bottom:12px"></div>
-    <div class="qa-title" id="statusTitle">Update Status</div>
-    <div class="qa-sub" id="statusSub"></div>
-    <div class="status-grid" id="statusGrid"></div>
-    <button class="btn btn-red" style="width:100%;padding:11px;" onclick="saveStatus()">✓ Update Status & Send WhatsApp</button>
-    <button onclick="saveStatusOnly()" style="width:100%;padding:8px;margin-top:6px;background:none;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);">Update Status Only (no WA)</button>
-  </div>
-</div>
 
-<!-- QUICK PAYMENT MODAL -->
-<div class="ov" id="payOv" onclick="if(event.target===this)closePayModal()">
-  <div class="qa-modal">
-    <div class="modal-handle" style="margin-bottom:12px"></div>
-    <div class="qa-title" id="payTitle">Record Payment</div>
-    <div class="qa-sub" id="paySub"></div>
-    <div class="pay-inp-row">
-      <div class="fg"><label>Amount Received (₹)</label><input class="fi" type="number" id="qpAmt" placeholder="0" oninput="updatePayBalance()"></div>
-      <div class="fg"><label>Date</label><input class="fi" type="date" id="qpDate"></div>
-    </div>
-    <div id="payBalBox" style="background:#F9F9F9;border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted)">Order Total</span><span id="pbTotal" style="font-weight:600;"></span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted)">Already Received</span><span id="pbRecvd" style="color:var(--green);font-weight:600;"></span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--muted)">This Payment</span><span id="pbThis" style="color:var(--blue);font-weight:600;"></span></div>
-      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:5px;margin-top:3px;"><span style="font-weight:700;">Remaining After</span><span id="pbRemain" style="font-weight:700;color:var(--red);"></span></div>
-    </div>
-    <div class="fg" style="margin-bottom:12px;"><label>Payment Mode</label>
-      <select class="fi" id="qpMode"><option>Cash</option><option>Bank Transfer</option><option>Cheque</option><option>UPI</option></select>
-    </div>
-    <button class="btn btn-red" style="width:100%;padding:11px;" onclick="savePayment()">✓ Save Payment & Send WhatsApp</button>
-    <button onclick="savePaymentOnly()" style="width:100%;padding:8px;margin-top:6px;background:none;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);">Save Payment Only (no WA)</button>
-  </div>
-</div>
 
-<!-- ADD/EDIT MODAL -->
-<div class="ov" id="formOv" onclick="if(event.target===this)closeForm()">
-  <div class="modal" id="formModal">
-    <div class="modal-handle"></div>
-    <div class="mhead"><div class="mtitle" id="formTitle">New Order</div><button class="mclose" onclick="closeForm()">✕</button></div>
-    <div class="mbody">
-      <div class="tab-row">
-        <button class="tab active" onclick="switchTab('basic',this)">Order Info</button>
-        <button class="tab" onclick="switchTab('products',this)">Products</button>
-        <button class="tab" onclick="switchTab('payment',this)">Payment</button>
-        <button class="tab" onclick="switchTab('delivery',this)">Delivery</button>
-      </div>
-      <div class="tab-panel active" id="tab-basic">
-        <div class="form-row"><div class="fg"><label>Client Name *</label><input class="fi" id="f_client" placeholder="Rajesh Bhai Patel"></div><div class="fg"><label>Mobile *</label><input class="fi" id="f_phone" placeholder="9876543210"></div></div>
-        <div class="form-row"><div class="fg"><label>Date *</label><input class="fi" type="date" id="f_date"></div><div class="fg"><label>Employee *</label><select class="fi" id="f_employee"><option>Krishna</option><option>Pratham</option><option>Dealer</option><option>Baroda</option><option>Evara</option></select></div></div>
-        <div class="form-row"><div class="fg"><label>Architect</label><input class="fi" id="f_arch" placeholder="-"></div><div class="fg"><label>Architect Mobile</label><input class="fi" id="f_arch_no" placeholder="-"></div></div>
-        <div class="form-row"><div class="fg"><label>Site Address *</label><input class="fi" id="f_site" placeholder="Flat / Bungalow address"></div><div class="fg"><label>Location *</label><input class="fi" id="f_location" placeholder="Bopal, Thaltej..."></div></div>
-        <div class="form-row"><div class="fg"><label>Reference</label><input class="fi" id="f_ref" placeholder="ShowRoom / Instagram..."></div><div class="fg"><label>Payment Mode</label><select class="fi" id="f_paymode"><option>Cash</option><option>Bank</option><option>Cheque</option></select></div></div>
-        <div class="form-row"><div class="fg"><label>Order Status</label><select class="fi" id="f_status"><option>Material in Production</option><option>Order Complete</option><option>Installation in process</option></select></div><div class="fg"><label>Remarks</label><input class="fi" id="f_remarks" placeholder="Notes..."></div></div>
-      </div>
-      <div class="tab-panel" id="tab-products">
-        <div id="productsContainer"></div>
-        <button class="ap-btn" onclick="addProductRow()">+ Add Another Product</button>
-        <div class="sumbox">
-          <div class="sumrow"><span>Sub Total</span><span id="sumProd">₹0</span></div>
-          <div class="sumrow"><span>Transportation</span><span style="display:flex;align-items:center;gap:5px;"><input style="width:80px;border:1px solid #ddd;padding:3px 7px;border-radius:4px;font-size:12px;" id="f_transport" value="0" oninput="recalc()"> ₹</span></div>
-          <div class="sumrow"><span>GST 18% <input type="checkbox" id="f_gst" onchange="recalc()" style="margin-left:4px;vertical-align:middle;"></span><span id="sumGST">₹0</span></div>
-          <div class="sumrow tot"><span>TOTAL</span><span id="sumTotal" style="color:var(--red);font-size:16px;">₹0</span></div>
-        </div>
-      </div>
-      <div class="tab-panel" id="tab-payment">
-        <div class="form-row"><div class="fg"><label>1st Payment Date</label><input class="fi" type="date" id="f_recv1_date"></div><div class="fg"><label>1st Amount (₹)</label><input class="fi" type="number" id="f_recv1" value="0" oninput="recalc()"></div></div>
-        <div class="form-row"><div class="fg"><label>2nd Payment Date</label><input class="fi" type="date" id="f_recv2_date"></div><div class="fg"><label>2nd Amount (₹)</label><input class="fi" type="number" id="f_recv2" value="0" oninput="recalc()"></div></div>
-        <div class="sumbox" style="background:#E8F5E9;border:1px solid #A5D6A7;">
-          <div class="sumrow"><span>Total Value</span><span id="p_total" style="font-weight:700;">₹0</span></div>
-          <div class="sumrow"><span>Received</span><span id="p_recvd" style="color:var(--green);font-weight:700;">₹0</span></div>
-          <div class="sumrow tot" style="border-top-color:#A5D6A7;"><span>Balance Pending</span><span id="p_pending" style="color:var(--red);">₹0</span></div>
-        </div>
-        <div class="form-row"><div class="fg"><label>Adhesive Brand</label><input class="fi" id="f_adhesive" placeholder="Kerakoll / Ardex..."></div><div class="fg"><label>Bag Count</label><input class="fi" id="f_bag" placeholder="10 bags"></div></div>
-      </div>
-      <div class="tab-panel" id="tab-delivery">
-        <div class="form-row"><div class="fg"><label>Dispatch Date</label><input class="fi" type="date" id="f_dispatch"></div><div class="fg"><label>Installation By</label><input class="fi" id="f_install_by" placeholder="Contractor / Self"></div></div>
-        <div class="form-row"><div class="fg"><label>Installation Date</label><input class="fi" type="date" id="f_install_date"></div><div class="fg"><label>Photoshoot</label><select class="fi" id="f_photoshoot"><option>Pending</option><option>Done</option><option>Not Required</option></select></div></div>
-        <div class="fg"><label>Other Remarks</label><input class="fi" id="f_other_remarks" placeholder="Any other notes..."></div>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px;">
-        <button class="btn btn-ghost" style="flex:1;color:var(--text);" onclick="closeForm()">Cancel</button>
-        <button class="btn btn-red" style="flex:2;padding:11px;" id="formBtn" onclick="submitForm()">✓ Save to Google Sheet</button>
-      </div>
-    </div>
-  </div>
-</div>
+
+
 
 <script>
 const WEBAPP_URL='https://script.google.com/macros/s/AKfycbw_yCIstAMf_NkPakqwngRxdnD5SzJeI8FHJZ8vaszwqQVAgU_OOLpFK6fcCGFeOKTl/exec';
 const USERS={'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'Krishna',access:'all'},'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},'yash':{pass:'2528',role:'master',name:'Yash',emp:'all',access:'all'},'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'Pratham',access:'emp'},'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'Dealer',access:'emp'},'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'Evara',access:'emp'}};
 
-let currentUser=null,allOrders=[],filtered=[],currentView='card',editingSR=null,productCount=0,drActive='all',qpSR=null,qsSR=null,selectedStatus=null;
+let currentUser=null,allOrders=[],filtered=[],currentView='card',drActive='all';
 const fmt=n=>'₹'+Math.abs(n||0).toLocaleString('en-IN',{maximumFractionDigits:0});
 
 // ── LOGIN
@@ -490,7 +389,7 @@ function startApp(){
   if(currentUser.role!=='customer'){
     document.getElementById('refreshBtn').style.display='';
     document.getElementById('navTabs').style.display='';
-    if(currentUser.role==='master'){document.getElementById('pendingBtn').style.display='';document.getElementById('addBtn').style.display='';document.getElementById('empFilter').style.display='';}
+    if(currentUser.role==='master'){document.getElementById('pendingBtn').style.display='';document.getElementById('empFilter').style.display='';}
   }else{document.getElementById('custBanner').style.display='';}
   loadOrders();
 }
@@ -615,11 +514,7 @@ function renderCards(){
         <div class="pinfo"><div class="pl">Total</div><div class="ptotal">${fmt(o.total_amount)}</div><div class="ppend ${o.pending<-10?'pd':'pz'}">${o.pending<-10?fmt(o.pending)+' Due':'✓ Clear'}</div></div>
         <div class="abtns">
           ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="event.stopPropagation();sendWA(${o.sr})" title="WhatsApp">💬</button>`:''}
-          ${isMaster?`<button class="ibtn pay" onclick="event.stopPropagation();openPayModal(${o.sr})" title="Record Payment">💰</button>`:''}
-          ${isMaster?`<button class="ibtn status" onclick="event.stopPropagation();openStatusModal(${o.sr})" title="Quick Status">🔄</button>`:''}
           ${isMaster?`<button class="ibtn pdf" onclick="event.stopPropagation();generatePDF(${o.sr})" title="Invoice PDF">📄</button>`:''}
-          ${isMaster?`<button class="ibtn edit" onclick="event.stopPropagation();openEdit(${o.sr})" title="Edit">✏</button>`:''}
-          ${isMaster?`<button class="ibtn del" onclick="event.stopPropagation();confirmDelete(${o.sr})" title="Delete">🗑</button>`:''}
         </div>
       </div>
     </div>`;
@@ -641,11 +536,7 @@ function renderTable(){
     <td>${sPill(o.order_remarks)}</td>
     <td><div style="display:flex;gap:3px;">
       ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="sendWA(${o.sr})">💬</button>`:''}
-      ${isMaster?`<button class="ibtn pay" onclick="openPayModal(${o.sr})">💰</button>`:''}
-      ${isMaster?`<button class="ibtn status" onclick="openStatusModal(${o.sr})">🔄</button>`:''}
       ${isMaster?`<button class="ibtn pdf" onclick="generatePDF(${o.sr})">📄</button>`:''}
-      ${isMaster?`<button class="ibtn edit" onclick="openEdit(${o.sr})">✏</button>`:''}
-      ${isMaster?`<button class="ibtn del" onclick="confirmDelete(${o.sr})">🗑</button>`:''}
     </div></td>
   </tr>`).join('');
 }
@@ -693,8 +584,6 @@ function openDetail(sr){
       </div></div>`:''}
     <div style="display:flex;gap:8px;margin-top:10px;">
       <button class="btn btn-ghost" style="flex:1;color:var(--text);" onclick="closeDet()">Close</button>
-      ${isMaster?`<button class="btn" style="flex:1;background:#FFF3E0;color:var(--orange);border:1.5px solid var(--orange);" onclick="closeDet();openStatusModal(${o.sr})">🔄 Status</button>`:''}
-      ${isMaster?`<button class="btn" style="flex:1;background:#E8F5E9;color:var(--green);border:1.5px solid var(--green);" onclick="closeDet();openPayModal(${o.sr})">💰 Payment</button>`:''}
       ${isMaster?`<button class="btn btn-red" style="flex:1;" onclick="closeDet();generatePDF(${o.sr})">📄 PDF</button>`:''}
     </div>`;
   document.getElementById('detOv').classList.add('open');
@@ -725,99 +614,6 @@ function openPendingAll(){
   pen.forEach(o=>{const msg=`Namaste *${o.client}* Ji\n\nAMROCK Stone — Payment Reminder\n${D}\n\n*Order No : #${o.sr}*\nDate      : ${o.date}\nLocation  : ${o.location}\n\n${D}\nOrder Value    : Rs.${o.total_amount.toLocaleString('en-IN')}\nAmount Paid    : Rs.${o.total_received.toLocaleString('en-IN')}\n*Balance Due    : Rs.${Math.abs(o.pending).toLocaleString('en-IN')}*\n${D}\n\nKindly arrange the balance payment.\n\nCall / WhatsApp : *+91 99099 76153*\n— *AMROCK Stone Team*`;
   html+=`<div class="item"><div class="info"><strong>#${o.sr} — ${o.client}</strong><small>${o.location} · ${o.date} · ₹${Math.abs(o.pending).toLocaleString('en-IN')} due</small></div><a href="https://wa.me/91${o.phone}?text=${encodeURIComponent(msg)}" target="_blank">💬 Send</a></div>`;});
   html+='</body></html>';const w=window.open('','_blank','width=560,height=500');w.document.write(html);
-}
-
-// ── QUICK STATUS MODAL
-const STATUS_OPTIONS=[
-  {val:'Material in Production',label:'In Production',desc:'Material being made',icon:'⚙'},
-  {val:'Material Ready',label:'Ready to Dispatch',desc:'Production complete',icon:'📦'},
-  {val:'Dispatched',label:'Dispatched',desc:'Material sent to site',icon:'🚚'},
-  {val:'Installation in process',label:'Installing',desc:'Work in progress',icon:'🔨'},
-  {val:'Order Complete',label:'Complete',desc:'All done',icon:'✅'},
-];
-function openStatusModal(sr){
-  const o=allOrders.find(x=>x.sr===sr);if(!o)return;
-  qsSR=sr;selectedStatus=o.order_remarks;
-  document.getElementById('statusTitle').textContent=`Status — #${sr} ${o.client}`;
-  document.getElementById('statusSub').textContent=`Current: ${o.order_remarks||'—'}`;
-  document.getElementById('statusGrid').innerHTML=STATUS_OPTIONS.map(s=>`
-    <div class="sbtn ${o.order_remarks===s.val?'sel':''}" onclick="selectStatus('${s.val}',this)">
-      <div style="font-size:18px;margin-bottom:4px">${s.icon}</div>
-      <div class="st">${s.label}</div>
-      <div class="sd">${s.desc}</div>
-    </div>`).join('');
-  document.getElementById('statusOv').classList.add('open');
-}
-function selectStatus(val,el){selectedStatus=val;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function closeStatusModal(){document.getElementById('statusOv').classList.remove('open');}
-async function saveStatus(){await _doStatusSave(true);}
-async function saveStatusOnly(){await _doStatusSave(false);}
-async function _doStatusSave(sendWAFlag){
-  if(!selectedStatus||!qsSR)return;
-  const o=allOrders.find(x=>x.sr===qsSR);if(!o)return;
-  const upd={...o,order_remarks:selectedStatus};
-  closeStatusModal();
-  try{
-    const res=await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'editOrder',order:upd})});
-    const data=await res.json();if(data.error)throw new Error(data.error);
-    o.order_remarks=selectedStatus;
-    if(currentView==='card')renderCards();else renderTable();
-    renderStats(filtered);
-    if(sendWAFlag&&o.phone&&o.phone!=='-'){
-      const msg=buildWAMsg({...o,order_remarks:selectedStatus});
-      window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(msg)}`,'_blank');
-    }
-  }catch(err){showErr('Status update failed: '+err.message);}
-}
-
-// ── QUICK PAYMENT MODAL
-function openPayModal(sr){
-  const o=allOrders.find(x=>x.sr===sr);if(!o)return;
-  qpSR=sr;
-  document.getElementById('payTitle').textContent=`Payment — #${sr} ${o.client}`;
-  document.getElementById('paySub').textContent=`${o.location} · ${o.date}`;
-  document.getElementById('qpAmt').value='';
-  document.getElementById('qpDate').value=new Date().toISOString().split('T')[0];
-  document.getElementById('pbTotal').textContent=fmt(o.total_amount);
-  document.getElementById('pbRecvd').textContent=fmt(o.total_received);
-  document.getElementById('pbThis').textContent='₹0';
-  document.getElementById('pbRemain').textContent=fmt(Math.abs(o.pending));
-  document.getElementById('payOv').classList.add('open');
-}
-function updatePayBalance(){
-  const o=allOrders.find(x=>x.sr===qpSR);if(!o)return;
-  const amt=parseFloat(document.getElementById('qpAmt').value)||0;
-  document.getElementById('pbThis').textContent=fmt(amt);
-  const remain=o.total_amount-o.total_received-amt;
-  document.getElementById('pbRemain').textContent=remain<=0?'✓ CLEAR':fmt(remain);
-  document.getElementById('pbRemain').style.color=remain<=0?'var(--green)':'var(--red)';
-}
-function closePayModal(){document.getElementById('payOv').classList.remove('open');}
-async function savePayment(){await _doPaySave(true);}
-async function savePaymentOnly(){await _doPaySave(false);}
-async function _doPaySave(sendWAFlag){
-  const o=allOrders.find(x=>x.sr===qpSR);if(!o)return;
-  const amt=parseFloat(document.getElementById('qpAmt').value)||0;
-  const dt=document.getElementById('qpDate').value;
-  if(!amt){showErr('Enter payment amount.');return;}
-  // Figure which slot to fill
-  let upd={...o};
-  if(!upd.recv1_amt||upd.recv1_amt===0){upd.recv1_amt=amt;upd.recv1_date=dt;}
-  else{upd.recv2_amt=(upd.recv2_amt||0)+amt;upd.recv2_date=dt;}
-  upd.total_received=(upd.recv1_amt||0)+(upd.recv2_amt||0);
-  upd.pending=-(upd.total_amount-upd.total_received);
-  closePayModal();
-  try{
-    const res=await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'editOrder',order:upd})});
-    const data=await res.json();if(data.error)throw new Error(data.error);
-    Object.assign(o,upd);
-    if(currentView==='card')renderCards();else renderTable();
-    renderStats(filtered);
-    if(sendWAFlag&&o.phone&&o.phone!=='-'){
-      const msg=buildWAMsg(upd);
-      window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(msg)}`,'_blank');
-    }
-  }catch(err){showErr('Payment save failed: '+err.message);}
 }
 
 // ── PDF INVOICE
@@ -1069,47 +865,7 @@ function renderCustView(){
   }).join('');
 }
 
-// ── ADD/EDIT FORM
-function openAddModal(){editingSR=null;document.getElementById('formTitle').textContent='New Order';document.getElementById('formBtn').textContent='✓ Save to Sheet';resetForm();document.getElementById('formOv').classList.add('open');switchTab('basic',document.querySelector('.tab'));}
-function openEdit(sr){
-  const o=allOrders.find(x=>x.sr===sr);if(!o)return;
-  editingSR=sr;document.getElementById('formTitle').textContent=`Edit #${sr}`;document.getElementById('formBtn').textContent='✓ Update Sheet';resetForm();
-  ['f_client','f_phone','f_arch','f_arch_no','f_site','f_location','f_ref','f_adhesive','f_bag','f_install_by','f_other_remarks'].forEach(id=>{const v=({f_client:o.client,f_phone:o.phone,f_arch:o.architect,f_arch_no:o.arch_no,f_site:o.site,f_location:o.location,f_ref:o.reference,f_adhesive:o.adhesive,f_bag:o.bag,f_install_by:o.install_by,f_other_remarks:o.other_remarks})[id];document.getElementById(id).value=v||'';});
-  document.getElementById('f_date').value=o.date;document.getElementById('f_employee').value=o.employee;document.getElementById('f_paymode').value=o.payment_mode||'Cash';document.getElementById('f_status').value=o.order_remarks||'Material in Production';document.getElementById('f_transport').value=o.transport||0;document.getElementById('f_recv1').value=o.recv1_amt||0;document.getElementById('f_recv1_date').value=o.recv1_date||'';document.getElementById('f_recv2').value=o.recv2_amt||0;document.getElementById('f_recv2_date').value=o.recv2_date||'';document.getElementById('f_dispatch').value=o.dispatch_date||'';document.getElementById('f_install_date').value=o.install_date||'';document.getElementById('f_photoshoot').value=o.photoshoot||'Pending';
-  document.getElementById('productsContainer').innerHTML='';productCount=0;
-  o.products.forEach(p=>{addProductRow();const id=productCount;document.getElementById(`pp_${id}`).value=p.product;document.getElementById(`pc_${id}`).value=p.colour;document.getElementById(`psf_${id}`).value=p.sqft;document.getElementById(`prt_${id}`).value=p.price;recalcRow(id);});
-  recalc();document.getElementById('formOv').classList.add('open');switchTab('basic',document.querySelector('.tab'));
-}
-function closeForm(){document.getElementById('formOv').classList.remove('open');}
-function resetForm(){
-  ['f_client','f_phone','f_arch','f_arch_no','f_site','f_location','f_ref','f_adhesive','f_bag','f_install_by','f_other_remarks'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f_date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('f_employee').value='Krishna';document.getElementById('f_paymode').value='Cash';document.getElementById('f_status').value='Material in Production';document.getElementById('f_transport').value='0';document.getElementById('f_gst').checked=false;
-  ['f_recv1','f_recv2'].forEach(id=>document.getElementById(id).value='0');
-  ['f_recv1_date','f_recv2_date','f_dispatch','f_install_date'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f_photoshoot').value='Pending';document.getElementById('productsContainer').innerHTML='';productCount=0;addProductRow();recalc();
-}
-function addProductRow(){productCount++;const id=productCount;const div=document.createElement('div');div.className='pe';div.id=`pe_${id}`;div.innerHTML=`<button class="rp" onclick="removeProd(${id})" type="button">✕</button><div class="pe-t">Product ${id}</div><div class="form-row" style="margin-bottom:7px"><div class="fg"><label>Product Name *</label><input class="fi" id="pp_${id}" placeholder="Arctic Stone" oninput="recalc()"></div><div class="fg"><label>Colour</label><input class="fi" id="pc_${id}" placeholder="Exclusive White"></div></div><div class="form-row-3"><div class="fg"><label>Sq.Ft</label><input class="fi" type="number" id="psf_${id}" value="0" oninput="recalcRow(${id})"></div><div class="fg"><label>Rate (₹)</label><input class="fi" type="number" id="prt_${id}" value="0" oninput="recalcRow(${id})"></div><div class="fg"><label>Amount</label><div class="ctotal" id="ptotal_${id}">₹0</div></div></div>`;document.getElementById('productsContainer').appendChild(div);recalc();}
-function removeProd(id){document.getElementById(`pe_${id}`)?.remove();recalc();}
-function recalcRow(id){const sf=parseFloat(document.getElementById(`psf_${id}`)?.value)||0;const rt=parseFloat(document.getElementById(`prt_${id}`)?.value)||0;const el=document.getElementById(`ptotal_${id}`);if(el)el.textContent=fmt(sf*rt);recalc();}
-function recalc(){let sub=0;document.querySelectorAll('[id^="psf_"]').forEach(el=>{const id=el.id.replace('psf_','');sub+=(parseFloat(el.value)||0)*(parseFloat(document.getElementById(`prt_${id}`)?.value)||0);});const t2=parseFloat(document.getElementById('f_transport')?.value)||0;const gst=document.getElementById('f_gst')?.checked?sub*0.18:0;const total=sub+t2+gst;document.getElementById('sumProd').textContent=fmt(sub);document.getElementById('sumGST').textContent=fmt(gst);document.getElementById('sumTotal').textContent=fmt(total);const r1=parseFloat(document.getElementById('f_recv1')?.value)||0;const r2=parseFloat(document.getElementById('f_recv2')?.value)||0;document.getElementById('p_total').textContent=fmt(total);document.getElementById('p_recvd').textContent=fmt(r1+r2);document.getElementById('p_pending').textContent=fmt(total-(r1+r2));}
-async function submitForm(){
-  if(!WEBAPP_URL){showErr('No URL.');return;}
-  const client=document.getElementById('f_client').value.trim();
-  if(!client){switchTab('basic',document.querySelector('.tab'));showErr('Client Name required.');return;}
-  const products=[];let sub=0;
-  document.querySelectorAll('[id^="psf_"]').forEach(el=>{const id=el.id.replace('psf_','');const name=document.getElementById(`pp_${id}`)?.value.trim();if(!name)return;const sf=parseFloat(el.value)||0;const rt=parseFloat(document.getElementById(`prt_${id}`)?.value)||0;const t=sf*rt;sub+=t;products.push({product:name,colour:document.getElementById(`pc_${id}`)?.value.trim()||'',sqft:sf,price:rt,total:t});});
-  if(!products.length){switchTab('products',document.querySelectorAll('.tab')[1]);showErr('Add at least one product.');return;}
-  const transport=parseFloat(document.getElementById('f_transport').value)||0;const gstE=document.getElementById('f_gst').checked;const gstA=gstE?sub*0.18:0;const total=sub+transport+gstA;
-  const order={client,phone:document.getElementById('f_phone').value,date:document.getElementById('f_date').value,employee:document.getElementById('f_employee').value,architect:document.getElementById('f_arch').value||'-',arch_no:document.getElementById('f_arch_no').value||'-',site:document.getElementById('f_site').value,location:document.getElementById('f_location').value,reference:document.getElementById('f_ref').value||'Direct',payment_mode:document.getElementById('f_paymode').value,order_remarks:document.getElementById('f_status').value,transport,gst:gstA,gst_enabled:gstE,recv1_amt:parseFloat(document.getElementById('f_recv1').value)||0,recv1_date:document.getElementById('f_recv1_date').value,recv2_amt:parseFloat(document.getElementById('f_recv2').value)||0,recv2_date:document.getElementById('f_recv2_date').value,adhesive:document.getElementById('f_adhesive').value,bag:document.getElementById('f_bag').value,dispatch_date:document.getElementById('f_dispatch').value,install_by:document.getElementById('f_install_by').value,install_date:document.getElementById('f_install_date').value,photoshoot:document.getElementById('f_photoshoot').value,other_remarks:document.getElementById('f_other_remarks').value,products};
-  if(editingSR)order.sr=editingSR;
-  const ov=document.createElement('div');ov.className='saving-ov';ov.innerHTML=`<p>${editingSR?'Updating':'Saving'}...</p>`;document.getElementById('formModal').appendChild(ov);document.getElementById('formBtn').disabled=true;
-  try{const res=await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:editingSR?'editOrder':'addOrder',order})});const data=await res.json();if(data.error)throw new Error(data.error);ov.remove();document.getElementById('formBtn').disabled=false;document.getElementById('formOv').classList.remove('open');await loadOrders();alert('✅ '+data.message);}
-  catch(err){ov.remove();document.getElementById('formBtn').disabled=false;showErr('Save failed: '+err.message);}
-}
-async function confirmDelete(sr){const o=allOrders.find(x=>x.sr===sr);if(!o)return;if(!confirm(`Delete Order #${sr} — ${o.client}?\nThis cannot be undone.`))return;try{const res=await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'deleteOrder',sr})});const data=await res.json();if(data.error)throw new Error(data.error);await loadOrders();alert('✅ '+data.message);}catch(err){showErr('Delete failed: '+err.message);}}
 
-function switchTab(name,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));if(el)el.classList.add('active');else document.querySelector(`.tab[onclick*="${name}"]`)?.classList.add('active');document.getElementById('tab-'+name)?.classList.add('active');}
 function showErr(msg){document.getElementById('errMsg').textContent=msg;document.getElementById('errBar').style.display='flex';setTimeout(()=>document.getElementById('errBar').style.display='none',8000);}
 </script>
 </body>
