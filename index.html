@@ -1,64 +1,701 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AMROCK Order Management Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMROCK Stone — Order Dashboard 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Sora,system-ui,sans-serif;background:linear-gradient(135deg,#eef4ff,#f9fbff);color:#111827;min-height:100vh;font-size:13px}body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 10% 0,rgba(98,84,243,.20),transparent 28%),radial-gradient(circle at 95% 10%,rgba(14,165,233,.16),transparent 28%);pointer-events:none}.app{position:relative;z-index:1}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:13px 18px;background:rgba(255,255,255,.82);backdrop-filter:blur(18px);border-bottom:1px solid #dce5f5}.brand{display:flex;align-items:center;gap:10px;font-weight:900}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#6254f3);display:grid;place-items:center;color:#fff}.nav{display:flex;gap:6px;flex:1;overflow:auto}.nav button,.soft,.primary,.icon{border:0;border-radius:12px;height:38px;padding:0 13px;font-weight:800;font-family:inherit;cursor:pointer}.nav button{background:transparent;color:#64748b}.nav button.active{background:rgba(98,84,243,.12);color:#6254f3}.primary{background:linear-gradient(135deg,#6254f3,#0ea5e9);color:#fff}.soft,.icon{background:#fff;border:1px solid #dce5f5;color:#111827}.page{max-width:1600px;margin:auto;padding:18px}.section{display:none}.section.active{display:block}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}.panel,.card,.order-card{background:rgba(255,255,255,.86);border:1px solid #dce5f5;border-radius:18px;box-shadow:0 16px 48px rgba(32,48,85,.12)}.panel{padding:18px}.panel h1{font-size:26px}.sub{color:#64748b;line-height:1.5}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,.field input,.field select,.field textarea{height:40px;border:1px solid #dce5f5;border-radius:12px;background:#fff;padding:0 12px;outline:none;font-family:inherit}.field textarea{height:80px;padding:10px;resize:vertical}.toolbar .grow{flex:1}.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px}.card{padding:15px;position:relative;overflow:hidden}.card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#6254f3,#0ea5e9)}.card small{display:block;color:#64748b;text-transform:uppercase;font-size:10px;font-weight:900}.card b{display:block;font-size:26px;margin:5px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chart{height:285px}.chart canvas{height:220px!important}.orders{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.order-card{padding:15px;cursor:pointer;transition:.18s}.order-card:hover{transform:translateY(-2px);border-color:rgba(98,84,243,.35)}.order-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}.order-title{font-weight:900;font-size:15px}.order-id{font-size:10px;color:#94a3b8;font-weight:800}.pill{display:inline-flex;align-items:center;border:1px solid #dce5f5;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;background:#fff;color:#6254f3}.new{color:#2563eb;background:#eff6ff}.production{color:#7c3aed;background:#f5f3ff}.ready{color:#0f766e;background:#ecfdf5}.delivered{color:#059669;background:#ecfdf5}.hold{color:#dc2626;background:#fef2f2}.cancelled{color:#64748b;background:#f1f5f9}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.meta div{border:1px solid #eef3fb;background:#f8fafc;border-radius:12px;padding:8px}.meta small{display:block;color:#94a3b8;text-transform:uppercase;font-weight:900;font-size:9px}.meta b{font-size:12px}.footer-line{display:flex;justify-content:space-between;gap:8px;color:#64748b;font-size:11px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.52);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.open{display:flex}.modal-box{width:min(920px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 18px 54px rgba(0,0,0,.25)}.modal-head,.modal-actions{padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;gap:12px;align-items:center}.modal-actions{border-bottom:0;border-top:1px solid #e5e7eb;justify-content:flex-end}.modal-body{padding:16px}.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;font-size:10px;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:6px}.field.full{grid-column:1/-1}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;display:none;z-index:50}.toast.show{display:block}.table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden}.table th,.table td{padding:10px;border-bottom:1px solid #eef3fb;text-align:left}.table th{font-size:10px;text-transform:uppercase;color:#64748b;background:#f8fafc}@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}.orders,.grid,.hero{grid-template-columns:1fr 1fr}}@media(max-width:760px){.topbar{flex-wrap:wrap}.nav{order:3;width:100%}.cards,.orders,.grid,.hero,.form-grid{grid-template-columns:1fr}.page{padding:12px}.toolbar input,.toolbar select,.toolbar button{width:100%}}
+  :root {
+    --red: #C62828;
+    --red-dark: #8E1212;
+    --red-light: #EF5350;
+    --black: #111111;
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --border: #E0DADA;
+    --text: #1A1A1A;
+    --muted: #6B6060;
+    --green: #2E7D32;
+    --orange: #E65100;
+    --yellow: #F9A825;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); }
+
+  /* HEADER */
+  .header {
+    background:var(--black);
+    padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:3px solid var(--red);
+    position:sticky; top:0; z-index:100;
+  }
+  .header-brand { display:flex; align-items:center; gap:12px; }
+  .header-brand .logo { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; color:white; letter-spacing:2px; }
+  .header-brand .logo span { color:var(--red); }
+  .header-brand .sub { font-size:11px; color:#888; letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+  .header-right { display:flex; gap:10px; align-items:center; }
+  .btn { padding:8px 18px; border:none; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
+  .btn-red { background:var(--red); color:white; }
+  .btn-red:hover { background:var(--red-dark); }
+  .btn-outline { background:transparent; color:white; border:1.5px solid #444; }
+  .btn-outline:hover { border-color:var(--red); color:var(--red); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display:grid; grid-template-columns:repeat(5,1fr); gap:1px;
+    background:var(--border); border-bottom:2px solid var(--border);
+  }
+  .stat-card {
+    background:var(--surface); padding:16px 20px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .stat-label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-weight:600; }
+  .stat-value { font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; color:var(--text); }
+  .stat-value.red { color:var(--red); }
+  .stat-value.green { color:var(--green); }
+  .stat-value.orange { color:var(--orange); }
+
+  /* CONTROLS */
+  .controls {
+    padding:14px 28px;
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    background:var(--surface); border-bottom:1px solid var(--border);
+  }
+  .search-box {
+    flex:1; min-width:200px; padding:8px 14px;
+    border:1.5px solid var(--border); border-radius:6px;
+    font-family:'DM Sans',sans-serif; font-size:13px; outline:none;
+    transition:border .2s;
+  }
+  .search-box:focus { border-color:var(--red); }
+  .filter-select {
+    padding:8px 12px; border:1.5px solid var(--border); border-radius:6px;
+    font-family:'DM Sans',sans-serif; font-size:13px; outline:none;
+    background:white; cursor:pointer;
+  }
+  .filter-select:focus { border-color:var(--red); }
+  .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .view-toggle { display:flex; border:1.5px solid var(--border); border-radius:6px; overflow:hidden; }
+  .view-btn { padding:7px 14px; border:none; background:white; cursor:pointer; font-size:13px; transition:all .2s; }
+  .view-btn.active { background:var(--red); color:white; }
+
+  /* MAIN CONTENT */
+  .main { padding:20px 28px; }
+
+  /* CARD GRID */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
+
+  /* ORDER CARD */
+  .order-card {
+    background:var(--surface); border-radius:10px;
+    border:1.5px solid var(--border);
+    overflow:hidden; cursor:pointer;
+    transition:box-shadow .2s, transform .2s;
+  }
+  .order-card:hover { box-shadow:0 4px 20px rgba(198,40,40,.12); transform:translateY(-2px); }
+  .card-head {
+    padding:12px 16px;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,#fff 0%,#FDF8F8 100%);
+  }
+  .card-sr { font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--muted); font-weight:600; }
+  .card-date { font-size:11px; color:var(--muted); margin-top:2px; }
+  .card-client { font-size:15px; font-weight:600; color:var(--text); margin-top:2px; }
+  .status-pill {
+    padding:4px 10px; border-radius:20px; font-size:10px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
+  }
+  .s-complete { background:#E8F5E9; color:#1B5E20; }
+  .s-inprogress { background:#FFF3E0; color:#BF360C; }
+  .s-production { background:#E3F2FD; color:#0D47A1; }
+  .s-other { background:#F3E5F5; color:#4A148C; }
+  .card-body { padding:12px 16px; }
+  .card-meta { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .meta-tag { background:#F5F5F5; padding:3px 8px; border-radius:4px; font-size:11px; color:var(--muted); }
+  .meta-tag.loc { background:#FFF8E1; color:#795548; }
+  .meta-tag.ref { background:#E8EAF6; color:#3949AB; }
+  .meta-tag.emp { background:#F3E5F5; color:#7B1FA2; }
+  .products-mini { margin-bottom:10px; }
+  .product-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px dashed #F0EDED; font-size:12px; }
+  .product-row:last-child { border-bottom:none; }
+  .product-name { font-weight:500; color:var(--text); flex:1; }
+  .product-colour { color:var(--muted); font-size:11px; margin:0 8px; }
+  .product-amt { font-weight:600; color:var(--text); }
+  .more-products { font-size:11px; color:var(--red); font-weight:600; padding:2px 0; }
+  .card-footer {
+    padding:10px 16px;
+    background:#FAFAFA; border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .payment-info { display:flex; flex-direction:column; gap:2px; }
+  .pay-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .pay-total { font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; }
+  .pay-pending { font-size:11px; font-weight:600; }
+  .pending-zero { color:var(--green); }
+  .pending-due { color:var(--red); }
+  .action-btns { display:flex; gap:6px; }
+  .icon-btn {
+    width:30px; height:30px; border-radius:6px; border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    background:white; cursor:pointer; font-size:14px;
+    transition:all .2s;
+  }
+  .icon-btn:hover { border-color:var(--red); background:#FEF0F0; }
+  .icon-btn.wa { border-color:#25D366; background:#F0FFF4; }
+  .icon-btn.wa:hover { background:#25D366; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { margin:8px 0 4px; }
+  .progress-label { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-bottom:3px; }
+  .progress-track { height:4px; background:#EEE; border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--red); border-radius:2px; transition:width .5s; }
+  .progress-fill.full { background:var(--green); }
+
+  /* LIST VIEW */
+  .order-table { width:100%; border-collapse:collapse; }
+  .order-table th {
+    background:var(--black); color:white;
+    padding:10px 14px; font-size:11px; text-transform:uppercase;
+    letter-spacing:.5px; font-weight:600; text-align:left;
+    position:sticky; top:61px;
+  }
+  .order-table td { padding:10px 14px; font-size:13px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .order-table tr:hover td { background:#FEF8F8; }
+  .order-table .td-sr { font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--red); }
+  .order-table .td-client { font-weight:600; }
+  .order-table .td-amount { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; }
+  .order-table .td-pending-zero { color:var(--green); font-weight:600; }
+  .order-table .td-pending-due { color:var(--red); font-weight:600; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(17,17,17,.65); z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:white; border-radius:12px; width:700px; max-width:95vw;
+    max-height:90vh; overflow:hidden; display:flex; flex-direction:column;
+    transform:scale(.95); transition:transform .25s;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+  }
+  .modal-overlay.open .modal { transform:scale(1); }
+  .modal-header {
+    background:var(--black); padding:16px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom:3px solid var(--red);
+  }
+  .modal-title { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:white; }
+  .modal-close { background:none; border:none; color:#aaa; font-size:22px; cursor:pointer; padding:0 4px; }
+  .modal-close:hover { color:white; }
+  .modal-body { overflow-y:auto; padding:20px; }
+  .modal-section { margin-bottom:20px; }
+  .modal-section-title {
+    font-size:11px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--muted); font-weight:700; margin-bottom:10px;
+    padding-bottom:6px; border-bottom:1px solid var(--border);
+  }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .info-item { }
+  .info-key { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .info-val { font-size:14px; font-weight:500; margin-top:2px; }
+  .product-table { width:100%; border-collapse:collapse; }
+  .product-table th { background:#F5F5F5; padding:8px 12px; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); text-align:left; }
+  .product-table td { padding:8px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .product-table tfoot td { background:#FEF0F0; font-weight:700; font-size:14px; }
+  .payment-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .payment-box { background:#F9F9F9; border-radius:8px; padding:12px; border:1px solid var(--border); }
+  .payment-box .val { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; }
+  .payment-box.due .val { color:var(--red); }
+  .payment-box.paid .val { color:var(--green); }
+  .wa-section { background:#F0FFF4; border:1.5px solid #25D366; border-radius:8px; padding:14px; }
+  .wa-section h4 { color:#1B5E20; margin-bottom:8px; font-size:13px; }
+  .wa-msg { font-size:12px; color:#2E7D32; line-height:1.6; white-space:pre-wrap; background:white; padding:10px; border-radius:6px; margin-bottom:10px; }
+  .wa-btn { background:#25D366; color:white; border:none; padding:10px 20px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px; width:100%; justify-content:center; }
+  .wa-btn:hover { background:#128C7E; }
+
+  /* ADD ORDER MODAL */
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  .form-group { display:flex; flex-direction:column; gap:4px; }
+  .form-group label { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600; }
+  .form-input {
+    padding:8px 12px; border:1.5px solid var(--border); border-radius:6px;
+    font-family:'DM Sans',sans-serif; font-size:13px; outline:none;
+  }
+  .form-input:focus { border-color:var(--red); }
+  .product-entry { background:#F9F9F9; border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:10px; position:relative; }
+  .product-entry-title { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:8px; }
+  .remove-product { position:absolute; top:10px; right:10px; background:none; border:none; color:#ccc; cursor:pointer; font-size:16px; }
+  .remove-product:hover { color:var(--red); }
+  .calc-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .calc-total { background:#FEF0F0; padding:8px 12px; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; color:var(--red); text-align:right; }
+  .add-product-btn { width:100%; padding:8px; border:2px dashed var(--border); border-radius:6px; background:white; color:var(--muted); cursor:pointer; font-size:13px; margin-bottom:12px; }
+  .add-product-btn:hover { border-color:var(--red); color:var(--red); }
+  .order-summary-box { background:#FEF0F0; border-radius:8px; padding:14px; margin-bottom:12px; }
+  .order-summary-box .row { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; }
+  .order-summary-box .row.total { font-weight:700; font-size:15px; border-top:1px solid #f0c0c0; margin-top:6px; padding-top:6px; }
+  .hidden { display:none; }
+  .empty-state { text-align:center; padding:60px; color:var(--muted); }
+  .empty-state h3 { font-family:'Rajdhani',sans-serif; font-size:22px; margin-bottom:8px; }
 </style>
 </head>
 <body>
-<main class="app">
-<header class="topbar"><div class="brand"><div class="mark">A</div><span>AMROCK Orders</span></div><nav class="nav" id="nav"><button class="active" data-sec="dashboard">Dashboard</button><button data-sec="orders">Order Cards</button><button data-sec="analytics">Analytics</button><button data-sec="sheet">Sheet Setup</button></nav><button class="primary" id="addBtn">+ Add Order</button><button class="icon" id="refreshBtn">Refresh</button></header>
-<div class="page">
-<section class="section active" id="dashboard"><div class="hero"><div class="panel"><h1>Order Management Dashboard</h1><p class="sub">Card-based order entry, editing, tracking and analysis connected with Google Sheet tab <b>2026</b>.</p></div><div class="panel"><b>Important:</b><p class="sub">Paste your Apps Script Web App URL in the HTML variable <b>WEB_APP_URL</b>. Without it, dashboard can show demo mode only.</p></div></div><div class="cards" id="kpis"></div><div class="grid"><div class="panel chart"><h3>Orders by Status</h3><canvas id="statusChart"></canvas></div><div class="panel chart"><h3>Product-wise Orders</h3><canvas id="productChart"></canvas></div><div class="panel chart"><h3>Colour-wise Demand</h3><canvas id="colourChart"></canvas></div></div></section>
-<section class="section" id="orders"><div class="toolbar"><input id="search" placeholder="Search customer, product, colour, city"><select id="statusFilter"><option value="">All Status</option><option>New</option><option>In Production</option><option>Ready</option><option>Delivered</option><option>On Hold</option><option>Cancelled</option></select><select id="paymentFilter"><option value="">All Payment</option><option>Pending</option><option>Part Paid</option><option>Paid</option></select><button class="soft" id="clearBtn">Clear</button><span class="grow"></span><button class="primary" id="addBtn2">+ Add Order</button></div><div class="orders" id="orderCards"></div></section>
-<section class="section" id="analytics"><div class="cards" id="analysisCards"></div><div class="grid"><div class="panel chart"><h3>Payment Status</h3><canvas id="paymentChart"></canvas></div><div class="panel chart"><h3>Assigned To</h3><canvas id="assignedChart"></canvas></div><div class="panel chart"><h3>Monthly Order Value</h3><canvas id="monthChart"></canvas></div></div><br><div class="panel"><h3>Top Product / Colour Combination</h3><table class="table"><thead><tr><th>Product</th><th>Colour</th><th>Orders</th><th>Quantity</th><th>Value</th></tr></thead><tbody id="comboRows"></tbody></table></div></section>
-<section class="section" id="sheet"><div class="panel"><h2>Setup Steps</h2><p class="sub"><b>1.</b> Open Apps Script from your Google Sheet.<br><b>2.</b> Paste the provided <b>Code.gs</b> file.<br><b>3.</b> Deploy as Web App: Execute as <b>Me</b>, Access <b>Anyone with the link</b>.<br><b>4.</b> Copy Web App URL and paste it inside this HTML: <b>const WEB_APP_URL = 'YOUR_URL_HERE'</b>.<br><b>5.</b> Host this HTML on GitHub Pages / Hostinger / local browser.</p><br><button class="primary" id="setupBtn">Create Headers in Sheet</button><p class="sub" id="setupMsg"></p></div></section>
+
+<div class="header">
+  <div class="header-brand">
+    <div>
+      <div class="logo">AM<span>ROCK</span> STONE</div>
+      <div class="sub">Order Management Dashboard — 2026</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+    <button class="btn btn-red" onclick="openAddModal()">+ New Order</button>
+  </div>
 </div>
-</main>
-<div class="modal" id="orderModal"><div class="modal-box"><div class="modal-head"><div><h2 id="modalTitle">Add Order</h2><p class="sub" id="modalSub">Fill order details. Total and balance calculate automatically.</p></div><button class="icon" id="closeModal">Close</button></div><div class="modal-body"><form id="orderForm" class="form-grid"><input type="hidden" id="orderId"><div class="field"><label>Order Date</label><input id="orderDate" type="date"></div><div class="field"><label>Customer Name</label><input id="customerName" required></div><div class="field"><label>Mobile No.</label><input id="mobileNo"></div><div class="field"><label>Project / Site</label><input id="projectSiteName"></div><div class="field"><label>City</label><input id="city"></div><div class="field"><label>Product</label><select id="product"><option>Stone Cladding</option><option>Brick Cladding</option><option>Artifacts Panel</option><option>FRP Grating</option><option>FRP Manhole Cover</option><option>Signage</option><option>Other</option></select></div><div class="field"><label>Colour</label><input id="colour" placeholder="Grey / Sand / White / Custom"></div><div class="field"><label>Finish</label><input id="finish" placeholder="Matt / Rough / Natural / Gloss"></div><div class="field"><label>Size / Specification</label><input id="sizeSpecification"></div><div class="field"><label>Quantity</label><input id="quantity" type="number" step="0.01" value="0"></div><div class="field"><label>Unit</label><select id="unit"><option>Sq.ft</option><option>Sq.mtr</option><option>Nos</option><option>Running ft</option><option>Kg</option></select></div><div class="field"><label>Rate</label><input id="rate" type="number" step="0.01" value="0"></div><div class="field"><label>Total Amount</label><input id="totalAmount" type="number" step="0.01" readonly></div><div class="field"><label>Advance Received</label><input id="advanceReceived" type="number" step="0.01" value="0"></div><div class="field"><label>Balance Amount</label><input id="balanceAmount" type="number" step="0.01" readonly></div><div class="field"><label>Order Status</label><select id="orderStatus"><option>New</option><option>In Production</option><option>Ready</option><option>Delivered</option><option>On Hold</option><option>Cancelled</option></select></div><div class="field"><label>Payment Status</label><select id="paymentStatus"><option>Pending</option><option>Part Paid</option><option>Paid</option></select></div><div class="field"><label>Delivery Date</label><input id="deliveryDate" type="date"></div><div class="field"><label>Assigned To</label><input id="assignedTo"></div><div class="field full"><label>Remarks</label><textarea id="remarks"></textarea></div></form></div><div class="modal-actions"><button class="soft" id="deleteBtn">Delete</button><button class="primary" id="saveBtn">Save Order</button></div></div></div>
-<div class="toast" id="toast"></div>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="controls">
+  <input class="search-box" type="text" placeholder="🔍  Search client, location, product, architect..." id="searchBox" oninput="applyFilters()">
+  <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+    <option value="">All Status</option>
+    <option value="Order Complete">Order Complete</option>
+    <option value="Installation in process">Installation</option>
+    <option value="Material in Production">In Production</option>
+  </select>
+  <select class="filter-select" id="empFilter" onchange="applyFilters()">
+    <option value="">All Employees</option>
+  </select>
+  <select class="filter-select" id="pendingFilter" onchange="applyFilters()">
+    <option value="">All Payments</option>
+    <option value="due">Payment Due</option>
+    <option value="clear">Payment Clear</option>
+  </select>
+  <div class="view-toggle">
+    <button class="view-btn active" id="cardViewBtn" onclick="setView('card')">▦ Cards</button>
+    <button class="view-btn" id="listViewBtn" onclick="setView('list')">≡ List</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="cardView" class="card-grid"></div>
+  <div id="listView" class="hidden"><table class="order-table" id="orderTable"><thead><tr>
+    <th>SR</th><th>Date</th><th>Client</th><th>Location</th><th>Products</th><th>Employee</th><th>Total Amount</th><th>Received</th><th>Pending</th><th>Status</th><th>Action</th>
+  </tr></thead><tbody id="tableBody"></tbody></table></div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Order Details</div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Add Order Modal -->
+<div class="modal-overlay" id="addModal" onclick="closeAddEvent(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Add New Order</div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Client Name *</label><input class="form-input" id="f_client" placeholder="e.g. Rajesh Bhai Patel"></div>
+        <div class="form-group"><label>Client Mobile *</label><input class="form-input" id="f_phone" placeholder="9876543210"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date *</label><input class="form-input" type="date" id="f_date"></div>
+        <div class="form-group"><label>Employee *</label>
+          <select class="form-input" id="f_employee">
+            <option value="Krishna">Krishna</option>
+            <option value="Pratham">Pratham</option>
+            <option value="Dealer">Dealer</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Architect Name</label><input class="form-input" id="f_arch" placeholder="-"></div>
+        <div class="form-group"><label>Architect Mobile</label><input class="form-input" id="f_arch_no" placeholder="-"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Site Address *</label><input class="form-input" id="f_site" placeholder="Flat/Bungalow address"></div>
+        <div class="form-group"><label>Location *</label><input class="form-input" id="f_location" placeholder="Area name"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Reference</label><input class="form-input" id="f_ref" placeholder="ShowRoom / Instagram / etc."></div>
+        <div class="form-group"><label>Mode of Payment</label>
+          <select class="form-input" id="f_payment">
+            <option>Cash</option><option>Bank</option><option>Cheque</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin:10px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border);">Products</div>
+      <div id="productsContainer"></div>
+      <button class="add-product-btn" onclick="addProductRow()">+ Add Product / Item</button>
+
+      <div class="order-summary-box" id="orderSummary">
+        <div class="row"><span>Sub Total (Products)</span><span id="sumProducts">₹0</span></div>
+        <div class="row"><span>Transportation</span><span><input style="width:80px;border:1px solid #ddd;padding:3px 6px;border-radius:4px;font-size:13px;" id="f_transport" value="0" oninput="recalcSummary()"> ₹</span></div>
+        <div class="row"><span>GST (18%)</span><input type="checkbox" id="f_gst" onchange="recalcSummary()" style="margin-left:8px;"> <span id="sumGST">₹0</span></div>
+        <div class="row total"><span>TOTAL AMOUNT</span><span id="sumTotal" style="color:var(--red);">₹0</span></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>1st Payment Received</label><input class="form-input" type="number" id="f_recv1" value="0" oninput="recalcSummary()"></div>
+        <div class="form-group"><label>Order Status</label>
+          <select class="form-input" id="f_status">
+            <option>Material in Production</option>
+            <option>Order Complete</option>
+            <option>Installation in process</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Order Remarks</label>
+        <input class="form-input" id="f_remarks" placeholder="Any notes...">
+      </div>
+      <button class="btn btn-red" style="width:100%;padding:12px;" onclick="submitNewOrder()">✓ Save Order</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const SHEET_ID = '1gpblEDlT_Fi4sgPcYWjyzsJdri6J-DSx';
-const SHEET_NAME = '2026';
-const WEB_APP_URL = ''; // Paste Apps Script Web App URL here
-let ORDERS = [], charts = {};
-const demo = [
-{orderId:'AMO-DEMO-001',orderDate:'2026-05-28',customerName:'Aavishkar Realty',mobileNo:'',projectSiteName:'Nirant Park',city:'Ahmedabad',product:'Brick Cladding',colour:'Sand',finish:'Rough',sizeSpecification:'Standard',quantity:180,unit:'Sq.ft',rate:150,totalAmount:27000,advanceReceived:10000,balanceAmount:17000,orderStatus:'New',paymentStatus:'Part Paid',deliveryDate:'2026-06-04',assignedTo:'Krishna',remarks:'Sample and catalogue shared.'},
-{orderId:'AMO-DEMO-002',orderDate:'2026-05-27',customerName:'Harshbhai',mobileNo:'',projectSiteName:'Showroom',city:'Ahmedabad',product:'Artifacts Panel',colour:'Grey',finish:'Natural',sizeSpecification:'Premium',quantity:75,unit:'Sq.ft',rate:350,totalAmount:26250,advanceReceived:26250,balanceAmount:0,orderStatus:'Ready',paymentStatus:'Paid',deliveryDate:'2026-05-31',assignedTo:'Kiran',remarks:'Ready for dispatch.'}
-];
-const $=id=>document.getElementById(id); const money=n=>'₹'+Number(n||0).toLocaleString('en-IN'); const num=v=>Number(String(v||0).replace(/[^0-9.-]/g,''))||0;
-function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
-async function api(action, payload={}){ if(!WEB_APP_URL){ if(action==='list') return {ok:true,rows:demo}; throw new Error('WEB_APP_URL is blank. Paste Apps Script Web App URL first.'); } const opts = action==='list'||action==='setup' ? {} : {method:'POST',body:JSON.stringify({action,...payload}),headers:{'Content-Type':'text/plain;charset=utf-8'}}; const url = action==='list'||action==='setup' ? WEB_APP_URL+'?action='+action : WEB_APP_URL; const r=await fetch(url,opts); return await r.json(); }
-async function load(){ try{ const res=await api('list'); ORDERS=(res.rows||[]).map(normalize); renderAll(); }catch(e){toast(e.message)} }
-function normalize(o){ const q=num(o.quantity), rate=num(o.rate), total=num(o.totalAmount)||q*rate, adv=num(o.advanceReceived), bal=Math.max(0,total-adv); return {...o,quantity:q,rate,totalAmount:total,advanceReceived:adv,balanceAmount:bal}; }
-function filtered(){ const q=$('search')?$('search').value.toLowerCase().trim():''; const st=$('statusFilter')?$('statusFilter').value:''; const pay=$('paymentFilter')?$('paymentFilter').value:''; return ORDERS.filter(o=>(!st||o.orderStatus===st)&&(!pay||o.paymentStatus===pay)&&(!q||[o.customerName,o.product,o.colour,o.city,o.projectSiteName,o.assignedTo,o.orderId].join(' ').toLowerCase().includes(q))); }
-function group(rows, key, sumKey){ const out={}; rows.forEach(r=>{const k=r[key]||'Blank'; out[k]=(out[k]||0)+(sumKey?num(r[sumKey]):1)}); return out; }
-function renderAll(){ renderKpis(); renderOrders(); renderCharts(); renderAnalytics(); }
-function renderKpis(){ const rows=ORDERS, total=rows.reduce((s,r)=>s+num(r.totalAmount),0), bal=rows.reduce((s,r)=>s+num(r.balanceAmount),0), qty=rows.reduce((s,r)=>s+num(r.quantity),0), open=rows.filter(r=>!['Delivered','Cancelled'].includes(r.orderStatus)).length; $('kpis').innerHTML=[['Orders',rows.length,'Total orders'],['Open',open,'Active orders'],['Order Value',money(total),'Total value'],['Outstanding',money(bal),'Balance amount'],['Quantity',qty.toFixed(2),'Total quantity'],['Products',new Set(rows.map(r=>r.product).filter(Boolean)).size,'Product types']].map(c=>`<div class="card"><small>${c[0]}</small><b>${c[1]}</b><span>${c[2]}</span></div>`).join(''); }
-function statusClass(s){ return String(s||'').toLowerCase().replace(/\s+/g,'') }
-function renderOrders(){ const rows=filtered(); $('orderCards').innerHTML=rows.map(o=>`<article class="order-card" onclick="editOrder('${o.orderId}')"><div class="order-top"><div><div class="order-title">${esc(o.customerName||'No Customer')}</div><div class="order-id">${esc(o.orderId)}</div></div><span class="pill ${statusClass(o.orderStatus)}">${esc(o.orderStatus||'New')}</span></div><div class="sub">${esc(o.projectSiteName||'-')} · ${esc(o.city||'-')}</div><div class="meta"><div><small>Product</small><b>${esc(o.product||'-')}</b></div><div><small>Colour</small><b>${esc(o.colour||'-')}</b></div><div><small>Qty</small><b>${o.quantity} ${esc(o.unit||'')}</b></div><div><small>Value</small><b>${money(o.totalAmount)}</b></div><div><small>Balance</small><b>${money(o.balanceAmount)}</b></div><div><small>Payment</small><b>${esc(o.paymentStatus||'-')}</b></div></div><div class="footer-line"><span>Delivery: ${esc(o.deliveryDate||'-')}</span><span>${esc(o.assignedTo||'-')}</span></div></article>`).join('')||'<div class="panel"><b>No orders found.</b></div>'; }
-function renderAnalytics(){ const rows=ORDERS, paid=rows.filter(r=>r.paymentStatus==='Paid').length, pending=rows.filter(r=>r.paymentStatus!=='Paid').length, topProduct=top(group(rows,'product')), topColour=top(group(rows,'colour')); $('analysisCards').innerHTML=[['Paid Orders',paid,'Payment closed'],['Pending Payment',pending,'Need follow-up'],['Top Product',topProduct[0]||'-',topProduct[1]||0],['Top Colour',topColour[0]||'-',topColour[1]||0],['Delivered',rows.filter(r=>r.orderStatus==='Delivered').length,'Completed'],['In Production',rows.filter(r=>r.orderStatus==='In Production').length,'Manufacturing']].map(c=>`<div class="card"><small>${c[0]}</small><b>${c[1]}</b><span>${c[2]}</span></div>`).join(''); const combos={}; rows.forEach(r=>{const k=(r.product||'Blank')+'||'+(r.colour||'Blank'); combos[k]=combos[k]||{p:r.product||'Blank',c:r.colour||'Blank',orders:0,qty:0,value:0}; combos[k].orders++; combos[k].qty+=num(r.quantity); combos[k].value+=num(r.totalAmount);}); $('comboRows').innerHTML=Object.values(combos).sort((a,b)=>b.value-a.value).slice(0,20).map(x=>`<tr><td>${esc(x.p)}</td><td>${esc(x.c)}</td><td>${x.orders}</td><td>${x.qty.toFixed(2)}</td><td>${money(x.value)}</td></tr>`).join(''); }
-function top(o){return Object.entries(o).sort((a,b)=>b[1]-a[1])[0]||['',0]}
-function renderCharts(){ draw('statusChart','doughnut',group(ORDERS,'orderStatus')); draw('productChart','bar',group(ORDERS,'product')); draw('colourChart','bar',group(ORDERS,'colour')); draw('paymentChart','doughnut',group(ORDERS,'paymentStatus')); draw('assignedChart','bar',group(ORDERS,'assignedTo')); const m={}; ORDERS.forEach(o=>{const k=String(o.orderDate||'').slice(0,7)||'Blank';m[k]=(m[k]||0)+num(o.totalAmount)}); draw('monthChart','bar',m); }
-function draw(id,type,obj){ const el=$(id); if(!el) return; const labels=Object.keys(obj), data=Object.values(obj); if(charts[id]) charts[id].destroy(); charts[id]=new Chart(el,{type,data:{labels,datasets:[{data,backgroundColor:['#6254f3','#0ea5e9','#059669','#d97706','#dc2626','#7c3aed','#db2777'],borderWidth:0,borderRadius:type==='bar'?8:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom'}},scales:type==='bar'?{y:{beginAtZero:true},x:{grid:{display:false}}}:undefined}}); }
-function openModal(){ $('orderForm').reset(); $('orderId').value=''; $('orderDate').value=new Date().toISOString().slice(0,10); $('deleteBtn').style.display='none'; calc(); $('modalTitle').textContent='Add Order'; $('orderModal').classList.add('open'); }
-function closeModal(){ $('orderModal').classList.remove('open'); }
-function editOrder(id){ const o=ORDERS.find(x=>x.orderId===id); if(!o) return; openModal(); $('modalTitle').textContent='Edit Order'; $('deleteBtn').style.display='inline-block'; fields().forEach(k=>{if($(k)) $(k).value=o[k]??''}); calc(); }
-function fields(){return ['orderId','orderDate','customerName','mobileNo','projectSiteName','city','product','colour','finish','sizeSpecification','quantity','unit','rate','totalAmount','advanceReceived','balanceAmount','orderStatus','paymentStatus','deliveryDate','assignedTo','remarks']}
-function formObj(){ const o={}; fields().forEach(k=>o[k]=$(k).value); return normalize(o); }
-function calc(){ const total=num($('quantity').value)*num($('rate').value); const bal=Math.max(0,total-num($('advanceReceived').value)); $('totalAmount').value=total.toFixed(2); $('balanceAmount').value=bal.toFixed(2); $('paymentStatus').value=bal<=0&&total>0?'Paid':num($('advanceReceived').value)>0?'Part Paid':'Pending'; }
-async function save(){ try{ const order=formObj(); const action=order.orderId?'update':'add'; const res=await api(action,{order}); if(!res.ok) throw new Error(res.error||'Save failed'); toast(res.message||'Saved'); closeModal(); await load(); }catch(e){toast(e.message)} }
-async function del(){ const id=$('orderId').value; if(!id||!confirm('Delete this order?')) return; try{ const res=await api('delete',{orderId:id}); if(!res.ok) throw new Error(res.error||'Delete failed'); toast('Deleted'); closeModal(); await load(); }catch(e){toast(e.message)} }
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-sec]').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));$(b.dataset.sec).classList.add('active');renderAll();});
-$('addBtn').onclick=openModal;$('addBtn2').onclick=openModal;$('closeModal').onclick=closeModal;$('orderModal').onclick=e=>{if(e.target.id==='orderModal')closeModal()};$('saveBtn').onclick=save;$('deleteBtn').onclick=del;$('refreshBtn').onclick=load;$('clearBtn').onclick=()=>{$('search').value='';$('statusFilter').value='';$('paymentFilter').value='';renderOrders()};$('search').oninput=renderOrders;$('statusFilter').onchange=renderOrders;$('paymentFilter').onchange=renderOrders;['quantity','rate','advanceReceived'].forEach(id=>$(id).oninput=calc);$('setupBtn').onclick=async()=>{try{const r=await api('setup');$('setupMsg').textContent=r.message||'Done';toast('Sheet setup done')}catch(e){$('setupMsg').textContent=e.message;toast(e.message)}};
-load();
+const ORDERS_RAW = [{"sr":1,"date":"2026-01-01","client":"RajeshBhai thakkar","phone":"9925041501","architect":"Ar. Vijay Mistry","employee":"Krishna","location":"Deesa","site":"Opp. Radhe Cold Storage,Deesa","payment_mode":"Bank","total_amount":326100.08,"total_received":591200.0,"pending":-61656.080000000016,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"European Brick","colour":"Slate Black","sqft":2342.0,"price":118.0,"total":276356.0},{"product":"Box","colour":"","sqft":126.0,"price":400.0,"total":50400.0}]},{"sr":2,"date":"2026-01-03","client":"Jigar Bhai","phone":"9824042701","architect":"-","employee":"Krishna","location":"Satellite","site":"404 Sureel-3 the vertical Vistac","payment_mode":"Bank","total_amount":19352.0,"total_received":19352.0,"pending":0.0,"dispatch_date":"2026-01-12","install_date":"","order_remarks":"Self Installation","reference":"ShowRoom","products":[{"product":"Arctic Curve","colour":"Glory Victorian Yellow","sqft":15.0,"price":410.0,"total":6150.0},{"product":"Arctic Plain","colour":"","sqft":25.0,"price":410.0,"total":10250.0}]},{"sr":3,"date":"2026-01-03","client":"Gunjan Sir","phone":"9924330330","architect":"Id. Nayan Khatri","employee":"Krishna","location":"Thaltej","site":"FP 66, Behind Time square","payment_mode":"Cash","total_amount":148680.0,"total_received":0.0,"pending":-148680.0,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"Instragram","products":[{"product":"Arctic Stone","colour":"Exclusive White","sqft":102.0,"price":500.0,"total":51000.0},{"product":"Infinix wave","colour":"Autumn Marrone Brown","sqft":120.0,"price":600.0,"total":72000.0}]},{"sr":4,"date":"2026-01-03","client":"Darshan Bhai","phone":"9924330330","architect":"Id. Nayan Khatri","employee":"Krishna","location":"Thaltej","site":"FP 66, Behind Time square","payment_mode":"Cash","total_amount":887295.1,"total_received":600000.0,"pending":-287295.1,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"Instragram","products":[{"product":"Ligeouse Stone","colour":"Marrone Brown","sqft":35.0,"price":420.0,"total":14700.0},{"product":"Urban Venner","colour":"Exclusive White","sqft":109.0,"price":345.0,"total":37605.0},{"product":"Pizza Brick","colour":"Exclusive White","sqft":2696.0,"price":245.0,"total":660520.0},{"product":"Leaflet Stone","colour":"Exclusive White","sqft":69.0,"price":480.0,"total":33120.0}]},{"sr":5,"date":"2026-01-05","client":"Maulik Bhai","phone":"9662415335","architect":"Ar. Alpesh Prajapati","employee":"Krishna","location":"Kalol","site":"Tirupati Society , Ambika","payment_mode":"Bank","total_amount":123758.4,"total_received":30000.0,"pending":-93758.4,"dispatch_date":"","install_date":"","order_remarks":"Remove our Product","reference":"Instragram","products":[{"product":"Fluted Curve","colour":"Linen Beige","sqft":84.0,"price":460.0,"total":38640.0},{"product":"Fluted Round","colour":"","sqft":144.0,"price":460.0,"total":66240.0}]},{"sr":6,"date":"2026-01-06","client":"Yogesh Bhai","phone":"9879000939","architect":"-","employee":"Krishna","location":"Sanathal","site":"opp Force Motors, Sanathal chokdi","payment_mode":"Bank","total_amount":483387.0,"total_received":483387.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Nikhil Sir","products":[{"product":"European Brick","colour":"Rosso Red","sqft":1100.0,"price":230.0,"total":253000.0},{"product":"European Brick","colour":"Country Grey","sqft":655.0,"price":230.0,"total":150650.0}]},{"sr":7,"date":"2026-01-06","client":"Ar. Deep Prajapati","phone":"9510800213","architect":"-","employee":"Krishna","location":"Chandkheda","site":"B-1101, Keshav Skyline , Beside Merriment parmeshwar","payment_mode":"Bank","total_amount":28845.0,"total_received":28845.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Arctic Stone","colour":"Exclusive White","sqft":24.0,"price":490.0,"total":11760.0},{"product":"Venus Stone","colour":"Victorian yellow","sqft":21.0,"price":485.0,"total":10185.0}]},{"sr":8,"date":"2026-01-07","client":"Devendra Bhai","phone":"7801879539","architect":"Ar. Tanmay Kathriya","employee":"Krishna","location":"Vastral","site":"44, Shivsanti Society, opp. Pusp Recidancy","payment_mode":"Cash","total_amount":35800.0,"total_received":35800.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Arctic Stone","colour":"Exclusive White","sqft":19.0,"price":440.0,"total":8360.0},{"product":"Traditional Stone","colour":"Exclusive White","sqft":32.4,"price":600.0,"total":19440.0},{"product":"Fixed Labour Charge","colour":"-","sqft":0.0,"price":60.0,"total":6000.0}]},{"sr":9,"date":"2026-01-10","client":"Nishant Kothari","phone":"9924090077","architect":"Ar. Tejas Hemani","employee":"Krishna","location":"Paldi","site":"37- A Samast Bramshatriya Society,","payment_mode":"Cash","total_amount":295493.55,"total_received":295493.55,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"ShowRoom","products":[{"product":"Moroccan Stone","colour":"Exclusive White","sqft":77.0,"price":420.0,"total":32340.0},{"product":"Richmond Stone","colour":"Glory Slate Black","sqft":221.0,"price":615.0,"total":135915.0},{"product":"Fluted stone","colour":"Country Grey","sqft":208.0,"price":480.0,"total":99840.0}]},{"sr":10,"date":"2026-01-13","client":"Parmesh Shah","phone":"9376190626","architect":"Ar. Smkit Parikh","employee":"Krishna","location":"Navrangpura","site":"A- 801 Swara Sky Green Opp. Esvar bhuvan","payment_mode":"Cash","total_amount":54509.0,"total_received":54509.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Evara","products":[{"product":"Husky Stone","colour":"Glory Slate Black","sqft":136.0,"price":350.0,"total":47600.0}]},{"sr":11,"date":"2026-01-16","client":"Rajkumar Kothari","phone":"9427383621","architect":"-","employee":"Krishna","location":"Maninagar","site":"B- 4 , Janardhan Society , opp. Rudra Flate, kakria","payment_mode":"Cash","total_amount":79060.0,"total_received":79060.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Natural brick","colour":"Rosso Red","sqft":250.0,"price":260.0,"total":65000.0}]},{"sr":12,"date":"2026-01-17","client":"Neha Bharill","phone":"7624030194","architect":"Ar. Nirav","employee":"Pratham","location":"Gota","site":"B-102, Aaryan Elan, Besides Savvy swaraj sports club","payment_mode":"Cash","total_amount":37147.2,"total_received":37147.2,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Market","products":[{"product":"Arctic Stone","colour":"Glory Victorian Yellow","sqft":57.0,"price":440.0,"total":25080.0}]},{"sr":13,"date":"2026-01-20","client":"Ar. Manthan Prajapati","phone":"9374987433","architect":"-","employee":"Pratham","location":"Chandkheda","site":"07, Ganesh Parisar, Chainpur, Aabugiri Tenement, Krishnadham Tenement,","payment_mode":"Bank","total_amount":27157.7,"total_received":27157.7,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Market","products":[{"product":"Solune Stone","colour":"Country Grey & Victorian Yellow","sqft":19.0,"price":430.0,"total":8170.0},{"product":"Slop Brick","colour":"Rosso Red","sqft":27.0,"price":235.0,"total":6345.0},{"product":"Fixed Labour Charge","colour":"-","sqft":0.0,"price":60.0,"total":6000.0}]},{"sr":14,"date":"2026-01-30","client":"Dr. Ashish Shah","phone":"8141584080","architect":"Id. Shubham Kakdiya","employee":"Krishna","location":"Paldi","site":"603, Shalin Prima, Vikas Gruh rd, Sharda Nagar Society , Paldi","payment_mode":"Cash","total_amount":65000.0,"total_received":65000.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"European Brick","colour":"Marrone Brown","sqft":290.0,"price":215.0,"total":62350.0}]},{"sr":15,"date":"2026-01-30","client":"Lala Bhai","phone":"9879666937","architect":"Ar. Naushad sir","employee":"Krishna","location":"Idar","site":"Alnoor society, Maruti showroom, ni Pahar Ambaji Highway Road, Idar","payment_mode":"Cash","total_amount":234330.38,"total_received":234330.38,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"ShowRoom","products":[{"product":"Dessert Stone","colour":"Glory Slate Black","sqft":233.0,"price":302.0,"total":70366.0},{"product":"Feather Stone","colour":"Exclusive White","sqft":135.0,"price":275.0,"total":37125.0}]},{"sr":16,"date":"2026-02-02","client":"Jaimin shah","phone":"9825036405","architect":"-","employee":"Pratham","location":"Bopal","site":"C- 1101, Indreaprasth shivanta beside sun sky park, Ambli Rd","payment_mode":"Bank","total_amount":26314.0,"total_received":26314.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Gaurav Sir","products":[{"product":"Urban Venner","colour":"Autumn Marrone Brown","sqft":46.0,"price":300.0,"total":13800.0},{"product":"Fixed Labour Charge","colour":"","sqft":0,"price":60.0,"total":6000.0}]},{"sr":17,"date":"2026-02-03","client":"Kumar Mulchandani","phone":"9898618926","architect":"Ar. pankaj Devanani","employee":"Krishna","location":"Kubernagar","site":"6 Radhe Radhe Bunglows Nr.Ravi Darshan Society Maya Cinema Road Kubernagar","payment_mode":"Cash","total_amount":85125.0,"total_received":85125.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Arctic stone","colour":"Exclusive White","sqft":175.0,"price":475.0,"total":83125.0}]},{"sr":18,"date":"2026-02-10","client":"Kaushik Mehta","phone":"7984106930","architect":"ID. Anjali","employee":"Krishna","location":"Bopal","site":"B- 401, Altius Viltor , Ambli Bopal Road, Opp. ashok Vatika , Bopal","payment_mode":"Cash","total_amount":39052.0,"total_received":39052.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Wood Story","products":[{"product":"Urban Venner","colour":"Exclusive White","sqft":88.0,"price":300.0,"total":26400.0}]},{"sr":19,"date":"2026-02-15","client":"Dr. Manish bhai","phone":"-","architect":"","employee":"Krishna","location":"Adanishantigram","site":"D 12 North Park, adani shantigram Near Vaishnodevi circle","payment_mode":"Cash","total_amount":24750.0,"total_received":18000.0,"pending":-6750.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Neel ceramic","products":[{"product":"Leaflet Stone","colour":"Exclusive White","sqft":50.0,"price":325.0,"total":16250.0}]},{"sr":20,"date":"2026-02-16","client":"Vishal Shah","phone":"9510451400","architect":"Id. Priyanka","employee":"Pratham","location":"Paldi","site":"B.11/2, Jain Merchant society, Mahalaxmi Cross Road , Paldi","payment_mode":"Bank","total_amount":47731.0,"total_received":47731.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Market","products":[{"product":"Arctic Srone","colour":"Exclusive White","sqft":71.0,"price":450.0,"total":31950.0}]},{"sr":21,"date":"2026-02-18","client":"Ankesh","phone":"7600763454","architect":"Ar. Devang jagani","employee":"Krishna","location":"Nikol","site":"A-401 , Rajvi Exotica , Near Swara Sanidhya , opp. mango cinema","payment_mode":"Cash","total_amount":20130.0,"total_received":20130.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"Repeat Ar.","products":[{"product":"Arctic Stone","colour":"Glory Slate Black","sqft":28.0,"price":460.0,"total":12880.0}]},{"sr":22,"date":"2026-02-19","client":"Vraj mundra","phone":"8980753028","architect":"-","employee":"Dealer","location":"Vadodara","site":"Vadodara","payment_mode":"Cash","total_amount":40300.0,"total_received":40300.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Jay Narayan marble","products":[{"product":"European Brick","colour":"Rosso Red","sqft":260.0,"price":155.0,"total":40300.0}]},{"sr":23,"date":"2026-02-23","client":"Dineshbhai","phone":"9051511111","architect":"-","employee":"Krishna","location":"Nr. Narmada Canel","site":"Green Panther Properties, on narmada Canal, nr. Kadi dham, Shiyapura","payment_mode":"Cash","total_amount":62068.0,"total_received":25000.0,"pending":-37068.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Instragram","products":[{"product":"Triangle Piece","colour":"Exclusive White","sqft":334.0,"price":150.0,"total":50100.0}]},{"sr":24,"date":"2026-02-27","client":"Chetan Bhai","phone":"9004006779","architect":"Ar. Dhaval","employee":"Krishna","location":"Nikol","site":"A-907, ,908, The Gateway , near Parikh, Hospital, SP Ring Road, Nikol","payment_mode":"Cash","total_amount":54600.0,"total_received":54600.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Installation in process","reference":"Evara","products":[{"product":"Granual Brick","colour":"Autumn Marrone Brown","sqft":240.0,"price":215.0,"total":51600.0}]},{"sr":25,"date":"2026-02-27","client":"Jay Soni","phone":"9016486006","architect":"-","employee":"Krishna","location":"Bopal","site":"A- 1501, Indraprasth, Shivanta Bopal Cross road","payment_mode":"Cash","total_amount":99020.0,"total_received":90000.0,"pending":-9020.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Instragram","products":[{"product":"Arctic Stone","colour":"Exclusive White","sqft":68.0,"price":510.0,"total":34680.0},{"product":"Tarang Stone","colour":"Exclusive White","sqft":68.0,"price":490.0,"total":33320.0},{"product":"Leaflet Stone","colour":"Exclusive White","sqft":62.0,"price":460.0,"total":28520.0}]},{"sr":26,"date":"2026-03-05","client":"Pratik thakkar","phone":"9825058484","architect":"-","employee":"Krishna","location":"Dholka","site":"Hotel Shreenath kheda Highway road opposite reliance petrol pump dholka","payment_mode":"Cash","total_amount":113000.0,"total_received":113000.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Instragram","products":[{"product":"European Brick","colour":"Olive Green","sqft":550.0,"price":200.0,"total":110000.0}]},{"sr":27,"date":"2026-03-05","client":"Hemang Pawar","phone":"9879991559","architect":"Ar. Dharmik Bhai","employee":"Pratham","location":"Thaltej","site":"B-18, Times corporate park, nr. Shilaj crossing Road, Thaltej Road, Thaltej","payment_mode":"Bank","total_amount":325267.0,"total_received":325267.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Market","products":[{"product":"Granual Brick","colour":"Exclusive White","sqft":986.0,"price":275.0,"total":271150.0}]},{"sr":28,"date":"2026-03-11","client":"Jignesh Patel","phone":"9825155273","architect":"Ar. Bhaumik Shah","employee":"Krishna","location":"Rajkot","site":"Safar polyfurniture Pvt. Ltd.  Survey no. 260 near jhiyana Chowkdi old wankaner Road Kuvadava","payment_mode":"Cash","total_amount":211500.0,"total_received":199800.0,"pending":-11700.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Pyramid Stone","colour":"Slate Black","sqft":420.0,"price":475.0,"total":199500.0},{"product":"ACE Font","colour":"","sqft":24.0,"price":500.0,"total":12000.0}]},{"sr":29,"date":"2026-03-20","client":"Pradeep Nair","phone":"9427001141","architect":"Ar.  Darshan Bhai","employee":"Pratham","location":"Shilaj","site":"41, Madhuvan Bunglows, Kalhar Bunglows road Shilaj","payment_mode":"Bank","total_amount":46822.4,"total_received":46822.4,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"European Brick","colour":"Rosso Red","sqft":143.0,"price":260.0,"total":37180.0}]},{"sr":30,"date":"2026-03-20","client":"Kirit Jani","phone":"9427564875","architect":"Ar. Harikrushna pattani","employee":"Krishna","location":"Thaltej","site":"B-501, Eminence 96, Near Aryaman bungalow,  Thaltej - Shilaj road","payment_mode":"Cash","total_amount":41710.0,"total_received":41710.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Leaflet Stone","colour":"Victorian Yellow","sqft":81.0,"price":410.0,"total":33210.0}]},{"sr":31,"date":"2026-03-24","client":"Devashish Sharma","phone":"9893030061","architect":"Ar. Virat Shah","employee":"Krishna","location":"Bopal","site":"A-701 Rajyash regius, Behind TRP Mall, Bopal, Ahmedabad","payment_mode":"Bank","total_amount":62540.0,"total_received":62540.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Newyork Brick","colour":"Glory Slate Black","sqft":202.0,"price":250.0,"total":50500.0}]},{"sr":32,"date":"2026-03-26","client":"Jinil Bhai","phone":"9998961550","architect":"-","employee":"Pratham","location":"Paldi","site":"502, Aurra Sky 19, mahalaxmi Five Rd, opp. Akash Flate Nr. Rambali School , Paldi","payment_mode":"Cash","total_amount":14300.0,"total_received":14300.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Fluted Stone","colour":"Glory Slate Black","sqft":30.0,"price":410.0,"total":12300.0}]},{"sr":33,"date":"2026-03-27","client":"Sachin Patel","phone":"9662821284","architect":"-","employee":"Pratham","location":"Bhadaj","site":"50 Prime Bunglow Supercity ,Bhadaj","payment_mode":"Cash","total_amount":9900.0,"total_received":9900.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Urban Venner","colour":"Autumn Slate Black","sqft":32.0,"price":280.0,"total":8960.0}]},{"sr":34,"date":"2026-04-03","client":"Devashish Sharma","phone":"9893030061","architect":"Ar. Virat Shah","employee":"Krishna","location":"Bopal","site":"A-701 Rajyash regius, Behind TRP Mall, Bopal, Ahmedabad","payment_mode":"Bank","total_amount":28320.0,"total_received":28320.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Granual Brick","colour":"Glory Victorian Yellow","sqft":86.0,"price":250.0,"total":21500.0}]},{"sr":35,"date":"2026-04-03","client":"Ar. Malay Seth","phone":"9825035896","architect":"-","employee":"Krishna","location":"Vaishnodevi","site":"B 57 Green Woods, Near sardar Dham, Vaishnodevi","payment_mode":"Bank","total_amount":31930.8,"total_received":20000.0,"pending":-19930.8,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"ShowRoom","products":[{"product":"Traditional Stone","colour":"Black - Golden Finished","sqft":44.0,"price":615.0,"total":27060.0},{"product":"Fixed Labour Charge","colour":"","sqft":0,"price":60.0,"total":6000.0}]},{"sr":36,"date":"2026-04-15","client":"Ar. Sanjay","phone":"9824351831","architect":"-","employee":"Krishna","location":"Shella","site":"315, Applewood  villa Shela ,  Ahmedabad","payment_mode":"Bank","total_amount":52651.6,"total_received":25000.0,"pending":-27651.6,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Urban Venner","colour":"Exclusive White","sqft":117.0,"price":360.0,"total":42120.0}]},{"sr":37,"date":"2026-04-22","client":"Dhavalbhai","phone":"9016433362","architect":"Ar. Samkit parikh","employee":"Krishna","location":"Mithakali","site":"803, Ekansh flat, opp. HCG Hospital , Mithakali","payment_mode":"Bank","total_amount":32002.8,"total_received":32002.8,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Evara","products":[{"product":"Venus Stone","colour":"Country Grey","sqft":50.0,"price":530.0,"total":26500.0}]},{"sr":38,"date":"2026-04-22","client":"Ar. Samkit parikh","phone":"7621000000","architect":"-","employee":"Krishna","location":"Shela","site":"26, Sky villa, Sky city, Shela , Ahmeabad","payment_mode":"Cash","total_amount":21500.0,"total_received":21500.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Evara","products":[{"product":"Granual Brick","colour":"Reverse Linen Beige","sqft":65.0,"price":200.0,"total":13000.0},{"product":"Fixed Labour Charge","colour":"","sqft":0,"price":60.0,"total":6000.0}]},{"sr":39,"date":"2026-04-27","client":"Rakeshbhai","phone":"7779096914","architect":"-","employee":"Krishna","location":"Nana Chiloda","site":"Virjala Engineering opp linematic unit 4 Nr Jaiswal Bhavan, Nana Chiloda","payment_mode":"Bank","total_amount":33664.0,"total_received":33664.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Evara","products":[{"product":"Arctic Stone","colour":"Autumn Marron Brown","sqft":45.0,"price":440.0,"total":19800.0}]},{"sr":40,"date":"2026-05-01","client":"Bhavik Bhai","phone":"8487005000","architect":"-","employee":"Krishna","location":"Zundal","site":"B 303 Monark Clans Zondal, Ringroad, Ahmedabad","payment_mode":"Cash","total_amount":4000.0,"total_received":3000.0,"pending":-1000.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Umesh Sir","products":[{"product":"ACE Lamp","colour":"Golden and white","sqft":2.0,"price":2000.0,"total":4000.0}]},{"sr":41,"date":"2026-05-02","client":"Nikhil Bhai","phone":"9374688666","architect":"Ar. Kapil","employee":"Krishna","location":"Nikol","site":"E - 502, Atlatis , Opp. Malbar Hill, MG Road , Nikol","payment_mode":"Bank","total_amount":95113.9,"total_received":95113.9,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Richmond","colour":"Reverse Linen Beige","sqft":99.0,"price":620.0,"total":61380.0},{"product":"Slop Brick","colour":"Rosso Red","sqft":59.0,"price":275.0,"total":16225.0}]},{"sr":42,"date":"2026-05-05","client":"Dhruval Dhaval","phone":"9825555440","architect":"Ar. Samkit parikh","employee":"Krishna","location":"Saraspur","site":"Cloud wellness Private Limited  Ashokwadi , Vikram mill compound plot no 63 palki Town planning schedule No. 11 Milan Talkies , saraspur , Ahmedabad","payment_mode":"Bank","total_amount":108607.2,"total_received":108607.2,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Evara","products":[{"product":"Pyramid","colour":"Country Grey","sqft":168.0,"price":530.0,"total":89040.0}]},{"sr":43,"date":"2026-05-07","client":"Aakash Bhai","phone":"9725218777","architect":"Ar. Sanjay Sarvaiya","employee":"Krishna","location":"Sargasan","site":"E-1102 Swagat Kingslan Swagat Circle , Sargasan , Gandhinagar","payment_mode":"Cash","total_amount":49825.0,"total_received":49825.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Egyptian Stone","colour":"Exclusive White","sqft":49.0,"price":530.0,"total":25970.0},{"product":"Miami Curve","colour":"With Tarazo","sqft":43.0,"price":485.0,"total":20855.0}]},{"sr":44,"date":"2026-05-07","client":"Ar. Saurav Jain","phone":"8200239811","architect":"-","employee":"Pratham","location":"Adani Shantigram","site":"D - 1303, Shivalik Green View","payment_mode":"Bank","total_amount":45146.8,"total_received":45146.8,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Market","products":[{"product":"Coastal Stone","colour":"Exclusive White","sqft":82.0,"price":430.0,"total":35260.0}]},{"sr":45,"date":"2026-05-07","client":"Sandeep Bhai","phone":"9978690822","architect":"Ar. Krishna Yadav","employee":"Pratham","location":"Gandhinagar","site":"D - 201, Siddraj Z Plus, Gandhinagar","payment_mode":"Bank","total_amount":38202.5,"total_received":38202.5,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Market","products":[{"product":"Slop Brick","colour":"Exclusive White","sqft":85.0,"price":275.0,"total":23375.0}]},{"sr":46,"date":"2026-05-09","client":"Pratin Shah","phone":"9879183083","architect":"Ar. Samkit parikh","employee":"Krishna","location":"Paldi","site":"101,first floor, Adinath Anclave, opp. Jain nagar dearsar, Paldi","payment_mode":"Cash","total_amount":36070.0,"total_received":36070.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Evara","products":[{"product":"Arctic Stone","colour":"Glory Slate Black","sqft":66.0,"price":445.0,"total":29370.0}]},{"sr":47,"date":"2026-05-15","client":"Kaumil Bhai","phone":"9904499015","architect":"Ar. Manan","employee":"Krishna","location":"Ashram Road","site":"201, Kaling Complex , Ashram Road","payment_mode":"Cash","total_amount":44845.0,"total_received":44845.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"Dallas Hexa","colour":"Glory Slate Black","sqft":67.0,"price":535.0,"total":35845.0}]},{"sr":48,"date":"2026-05-20","client":"Gautam Sir","phone":"9825523460","architect":"-","employee":"Krishna","location":"Satellite","site":"B - 501, Arash Apartment , preranatirth Derasar Road, Satelite","payment_mode":"Bank","total_amount":0.0,"total_received":0.0,"pending":0.0,"dispatch_date":"","install_date":"","order_remarks":"Order Complete","reference":"Owner","products":[{"product":"3","colour":"Exclusive White","sqft":24.0,"price":0.0,"total":0.0}]},{"sr":49,"date":"2026-05-21","client":"Mitul Bhai","phone":"9638059590","architect":"-","employee":"Dealer","location":"Vadodara","site":"Old School Eatry, Riddhi Complex, Beside DBS bank Vadodara","payment_mode":"Cash","total_amount":274500.0,"total_received":100000.0,"pending":-174500.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"Vraj Dealer - vadodara","products":[{"product":"Micro Coating","colour":"Victorian Yellow","sqft":1500.0,"price":183.0,"total":274500.0}]},{"sr":50,"date":"2026-05-26","client":"Ar. Viren Patel","phone":"9662207461","architect":"-","employee":"Krishna","location":"Navrangpura","site":"404, Aakanksha, Opp. Vadilal House, nr. NavrangpuraRailway Crossing , Navrangpura","payment_mode":"Cash","total_amount":25500.0,"total_received":0.0,"pending":-25500.0,"dispatch_date":"","install_date":"","order_remarks":"Material in Production","reference":"ShowRoom","products":[{"product":"European Brick","colour":"Slate Black","sqft":92.0,"price":250.0,"total":23000.0}]}];
+
+let allOrders = JSON.parse(JSON.stringify(ORDERS_RAW));
+let filtered = [...allOrders];
+let currentView = 'card';
+
+// ── INIT
+window.onload = () => {
+  document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+  populateEmployeeFilter();
+  renderStats();
+  renderCards();
+  addProductRow();
+};
+
+function populateEmployeeFilter() {
+  const emps = [...new Set(allOrders.map(o=>o.employee))].filter(Boolean);
+  const sel = document.getElementById('empFilter');
+  emps.forEach(e => { const o=document.createElement('option'); o.value=e; o.textContent=e; sel.appendChild(o); });
+}
+
+// ── STATS
+function fmt(n) { return '₹'+Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+function renderStats() {
+  const total = allOrders.reduce((a,o)=>a+o.total_amount,0);
+  const received = allOrders.reduce((a,o)=>a+o.total_received,0);
+  const pendingAmt = allOrders.filter(o=>o.pending<0).reduce((a,o)=>a+Math.abs(o.pending),0);
+  const dueOrders = allOrders.filter(o=>o.pending<0).length;
+  const complete = allOrders.filter(o=>o.order_remarks==='Order Complete').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value">${allOrders.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value">${fmt(total)}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Collected</div><div class="stat-value green">${fmt(received)}</div></div>
+    <div class="stat-card"><div class="stat-label">Pending Amount</div><div class="stat-value red">${fmt(pendingAmt)}<span style="font-size:12px;color:var(--muted);"> (${dueOrders} orders)</span></div></div>
+    <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value orange">${complete} / ${allOrders.length}</div></div>
+  `;
+}
+
+// ── FILTERS
+function applyFilters() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const st = document.getElementById('statusFilter').value;
+  const emp = document.getElementById('empFilter').value;
+  const pay = document.getElementById('pendingFilter').value;
+  filtered = allOrders.filter(o => {
+    const haystack = [o.client,o.location,o.site,o.architect,o.reference,o.employee,...o.products.map(p=>p.product+' '+p.colour)].join(' ').toLowerCase();
+    if(q && !haystack.includes(q)) return false;
+    if(st && o.order_remarks!==st) return false;
+    if(emp && o.employee!==emp) return false;
+    if(pay==='due' && o.pending>=0) return false;
+    if(pay==='clear' && o.pending<0) return false;
+    return true;
+  });
+  if(currentView==='card') renderCards(); else renderTable();
+}
+
+function setView(v) {
+  currentView=v;
+  document.getElementById('cardViewBtn').className='view-btn'+(v==='card'?' active':'');
+  document.getElementById('listViewBtn').className='view-btn'+(v==='list'?' active':'');
+  document.getElementById('cardView').className='card-grid'+(v==='card'?'':' hidden');
+  document.getElementById('listView').className=(v==='list'?'':'hidden');
+  if(v==='card') renderCards(); else renderTable();
+}
+
+// ── STATUS PILL
+function statusPill(r) {
+  if(!r) return `<span class="status-pill s-other">—</span>`;
+  if(r.includes('Complete')) return `<span class="status-pill s-complete">✓ Complete</span>`;
+  if(r.includes('Installation')) return `<span class="status-pill s-inprogress">🔧 Installing</span>`;
+  if(r.includes('Production')) return `<span class="status-pill s-production">⚙ Production</span>`;
+  return `<span class="status-pill s-other">${r.substring(0,16)}</span>`;
+}
+
+// ── CARD RENDER
+function renderCards() {
+  const cv = document.getElementById('cardView');
+  if(!filtered.length) { cv.innerHTML='<div class="empty-state"><h3>No Orders Found</h3><p>Try changing your search or filters.</p></div>'; return; }
+  cv.innerHTML = filtered.map(o => {
+    const pendingAbs = Math.abs(o.pending);
+    const pct = o.total_amount>0 ? Math.min(100,Math.round(o.total_received/o.total_amount*100)) : 100;
+    const pendingClass = o.pending<-10 ? 'pending-due' : 'pending-zero';
+    const pendingText = o.pending<-10 ? `₹${pendingAbs.toLocaleString('en-IN',{maximumFractionDigits:0})} Due` : '✓ Clear';
+    const productsShow = o.products.slice(0,2);
+    const moreCount = o.products.length - 2;
+    return `<div class="order-card" onclick="openDetail(${o.sr})">
+      <div class="card-head">
+        <div>
+          <div class="card-sr">SR #${o.sr} &nbsp;·&nbsp; <span style="color:var(--text)">${o.employee}</span></div>
+          <div class="card-client">${o.client}</div>
+          <div class="card-date">${o.date}</div>
+        </div>
+        ${statusPill(o.order_remarks)}
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="meta-tag loc">📍 ${o.location}</span>
+          <span class="meta-tag ref">↗ ${o.reference}</span>
+          <span class="meta-tag">${o.payment_mode}</span>
+        </div>
+        <div class="products-mini">
+          ${productsShow.map(p=>`<div class="product-row">
+            <span class="product-name">${p.product}</span>
+            <span class="product-colour">${p.colour||'—'}</span>
+            <span class="product-amt">₹${p.total.toLocaleString('en-IN',{maximumFractionDigits:0})}</span>
+          </div>`).join('')}
+          ${moreCount>0?`<div class="more-products">+${moreCount} more product${moreCount>1?'s':''}</div>`:''}
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Payment</span><span>${pct}%</span></div>
+          <div class="progress-track"><div class="progress-fill${pct>=100?' full':''}" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="payment-info">
+          <div class="pay-label">Total Amount</div>
+          <div class="pay-total">₹${o.total_amount.toLocaleString('en-IN',{maximumFractionDigits:0})}</div>
+          <div class="pay-pending ${pendingClass}">${pendingText}</div>
+        </div>
+        <div class="action-btns">
+          ${o.phone&&o.phone!=='-'?`<button class="icon-btn wa" onclick="event.stopPropagation();sendWhatsApp(${o.sr})" title="Send WhatsApp Update">💬</button>`:''}
+          <button class="icon-btn" onclick="event.stopPropagation();openDetail(${o.sr})" title="View Details">👁</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABLE RENDER
+function renderTable() {
+  const tb = document.getElementById('tableBody');
+  if(!filtered.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--muted)">No orders found</td></tr>';return;}
+  tb.innerHTML = filtered.map(o=>{
+    const pendingClass = o.pending<-10?'td-pending-due':'td-pending-zero';
+    const pendingText = o.pending<-10?'₹'+Math.abs(o.pending).toLocaleString('en-IN',{maximumFractionDigits:0}):'✓ Clear';
+    return `<tr>
+      <td class="td-sr">#${o.sr}</td>
+      <td>${o.date}</td>
+      <td class="td-client">${o.client}<br><small style="color:var(--muted)">${o.phone}</small></td>
+      <td>${o.location}</td>
+      <td style="max-width:180px;">${o.products.map(p=>`<div style="font-size:12px">${p.product} <span style="color:var(--muted)">${p.colour?'('+p.colour+')':''}</span></div>`).join('')}</td>
+      <td>${o.employee}</td>
+      <td class="td-amount">₹${o.total_amount.toLocaleString('en-IN',{maximumFractionDigits:0})}</td>
+      <td style="color:var(--green);font-weight:600;">₹${o.total_received.toLocaleString('en-IN',{maximumFractionDigits:0})}</td>
+      <td class="${pendingClass}">${pendingText}</td>
+      <td>${statusPill(o.order_remarks)}</td>
+      <td>
+        <button class="icon-btn" onclick="openDetail(${o.sr})" title="Details">👁</button>
+        ${o.phone&&o.phone!=='-'?`<button class="icon-btn wa" onclick="sendWhatsApp(${o.sr})" title="WhatsApp">💬</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── DETAIL MODAL
+function openDetail(sr) {
+  const o = allOrders.find(x=>x.sr===sr);
+  if(!o) return;
+  document.getElementById('modalTitle').textContent = `Order #${o.sr} — ${o.client}`;
+  const pendingAbs = Math.abs(o.pending);
+  const waMsg = buildWAMessage(o);
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">Client & Order Info</div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-key">Client Name</div><div class="info-val">${o.client}</div></div>
+        <div class="info-item"><div class="info-key">Mobile</div><div class="info-val"><a href="tel:${o.phone}" style="color:var(--red)">${o.phone}</a></div></div>
+        <div class="info-item"><div class="info-key">Architect</div><div class="info-val">${o.architect||'—'}</div></div>
+        <div class="info-item"><div class="info-key">Order Date</div><div class="info-val">${o.date}</div></div>
+        <div class="info-item"><div class="info-key">Reference</div><div class="info-val">${o.reference||'—'}</div></div>
+        <div class="info-item"><div class="info-key">Employee</div><div class="info-val">${o.employee}</div></div>
+        <div class="info-item" style="grid-column:1/-1"><div class="info-key">Site Address</div><div class="info-val">${o.site} — <strong>${o.location}</strong></div></div>
+        <div class="info-item"><div class="info-key">Payment Mode</div><div class="info-val">${o.payment_mode}</div></div>
+        <div class="info-item"><div class="info-key">Status</div><div class="info-val">${statusPill(o.order_remarks)}</div></div>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Products</div>
+      <table class="product-table">
+        <thead><tr><th>#</th><th>Product</th><th>Colour</th><th>Sq.Ft</th><th>Rate</th><th>Amount</th></tr></thead>
+        <tbody>${o.products.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${p.product}</strong></td><td>${p.colour||'—'}</td><td>${p.sqft}</td><td>₹${p.price}</td><td><strong>₹${p.total.toLocaleString('en-IN',{maximumFractionDigits:0})}</strong></td></tr>`).join('')}</tbody>
+        <tfoot><tr><td colspan="5" style="text-align:right">TOTAL</td><td>₹${o.total_amount.toLocaleString('en-IN',{maximumFractionDigits:0})}</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Payment Summary</div>
+      <div class="payment-grid">
+        <div class="payment-box"><div class="pay-label">Order Value</div><div class="val">₹${o.total_amount.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div>
+        <div class="payment-box paid"><div class="pay-label">Received</div><div class="val">₹${o.total_received.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div>
+        <div class="payment-box ${o.pending<-10?'due':''}"><div class="pay-label">${o.pending<-10?'Pending':'Status'}</div><div class="val">${o.pending<-10?'₹'+pendingAbs.toLocaleString('en-IN',{maximumFractionDigits:0}):'✓ Clear'}</div></div>
+      </div>
+    </div>
+    ${o.phone&&o.phone!=='-'?`
+    <div class="modal-section">
+      <div class="modal-section-title">WhatsApp Update (FREE via wa.me link)</div>
+      <div class="wa-section">
+        <h4>📱 Send Order Update to Client</h4>
+        <div class="wa-msg">${waMsg}</div>
+        <button class="wa-btn" onclick="sendWhatsAppDirect('${o.phone}','${encodeURIComponent(waMsg)}')">
+          <span>💬</span> Open WhatsApp — ${o.phone}
+        </button>
+      </div>
+    </div>`:''}
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
+function closeModal(e) { if(e.target===document.getElementById('detailModal')) closeDetailModal(); }
+
+// ── WHATSAPP (FREE - wa.me link)
+function buildWAMessage(o) {
+  const pending = o.pending<-10 ? `\n💰 *Pending Amount: ₹${Math.abs(o.pending).toLocaleString('en-IN',{maximumFractionDigits:0})}* — Kindly arrange payment at your earliest.` : `\n✅ Payment is fully clear. Thank you!`;
+  const products = o.products.map(p=>`  • ${p.product}${p.colour?' ('+p.colour+')':''} — ${p.sqft} sq.ft`).join('\n');
+  return `Namaste ${o.client} Ji 🙏\n\nThis is AMROCK Stone — your order update:\n\n*Order SR #${o.sr}*\n📍 Site: ${o.location}\n📅 Date: ${o.date}\n\n*Products:*\n${products}\n\n*Order Total: ₹${o.total_amount.toLocaleString('en-IN',{maximumFractionDigits:0})}*${pending}\n\nFor any queries, please contact us.\n\n— AMROCK Stone Team\n📞 +91 98258 03854`;
+}
+function sendWhatsApp(sr) {
+  const o = allOrders.find(x=>x.sr===sr);
+  if(!o||!o.phone||o.phone==='-') return;
+  const msg = buildWAMessage(o);
+  window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function sendWhatsAppDirect(phone,msg) {
+  window.open(`https://wa.me/91${phone}?text=${decodeURIComponent(msg)}`,'_blank');
+}
+
+// ── ADD ORDER MODAL
+let productCount=0;
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+function closeAddEvent(e) { if(e.target===document.getElementById('addModal')) closeAddModal(); }
+
+function addProductRow() {
+  productCount++;
+  const id = productCount;
+  const div = document.createElement('div');
+  div.className='product-entry'; div.id=`pe_${id}`;
+  div.innerHTML=`<button class="remove-product" onclick="removeProduct(${id})">✕</button>
+    <div class="product-entry-title">Product ${id}</div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-group"><label>Product Name *</label><input class="form-input" id="pp_${id}" placeholder="e.g. Arctic Stone" oninput="recalcSummary()"></div>
+      <div class="form-group"><label>Colour</label><input class="form-input" id="pc_${id}" placeholder="e.g. Exclusive White"></div>
+    </div>
+    <div class="calc-row">
+      <div class="form-group"><label>Sq.Ft *</label><input class="form-input" type="number" id="psf_${id}" value="0" oninput="recalcRow(${id})"></div>
+      <div class="form-group"><label>Rate/sqft (₹) *</label><input class="form-input" type="number" id="prt_${id}" value="0" oninput="recalcRow(${id})"></div>
+      <div class="form-group"><label>Amount</label><div class="calc-total" id="ptotal_${id}">₹0</div></div>
+    </div>`;
+  document.getElementById('productsContainer').appendChild(div);
+  recalcSummary();
+}
+function removeProduct(id) {
+  const el = document.getElementById(`pe_${id}`);
+  if(el) el.remove();
+  recalcSummary();
+}
+function recalcRow(id) {
+  const sf = parseFloat(document.getElementById(`psf_${id}`)?.value)||0;
+  const rt = parseFloat(document.getElementById(`prt_${id}`)?.value)||0;
+  const t = sf*rt;
+  const el = document.getElementById(`ptotal_${id}`);
+  if(el) el.textContent='₹'+t.toLocaleString('en-IN',{maximumFractionDigits:0});
+  recalcSummary();
+}
+function recalcSummary() {
+  let sub=0;
+  document.querySelectorAll('[id^="psf_"]').forEach(el=>{
+    const id=el.id.replace('psf_','');
+    const sf=parseFloat(el.value)||0;
+    const rt=parseFloat(document.getElementById(`prt_${id}`)?.value)||0;
+    sub+=sf*rt;
+  });
+  const transport=parseFloat(document.getElementById('f_transport')?.value)||0;
+  const gst=document.getElementById('f_gst')?.checked ? sub*0.18 : 0;
+  const total=sub+transport+gst;
+  document.getElementById('sumProducts').textContent='₹'+sub.toLocaleString('en-IN',{maximumFractionDigits:0});
+  document.getElementById('sumGST').textContent='₹'+gst.toLocaleString('en-IN',{maximumFractionDigits:0});
+  document.getElementById('sumTotal').textContent='₹'+total.toLocaleString('en-IN',{maximumFractionDigits:0});
+}
+
+function submitNewOrder() {
+  const client=document.getElementById('f_client').value.trim();
+  const phone=document.getElementById('f_phone').value.trim();
+  const date=document.getElementById('f_date').value;
+  if(!client||!date){alert('Please fill Client Name and Date');return;}
+  const products=[];
+  let sub=0;
+  document.querySelectorAll('[id^="psf_"]').forEach(el=>{
+    const id=el.id.replace('psf_','');
+    const name=document.getElementById(`pp_${id}`)?.value.trim();
+    if(!name) return;
+    const sf=parseFloat(el.value)||0;
+    const rt=parseFloat(document.getElementById(`prt_${id}`)?.value)||0;
+    const t=sf*rt; sub+=t;
+    products.push({product:name,colour:document.getElementById(`pc_${id}`)?.value.trim()||'',sqft:sf,price:rt,total:t});
+  });
+  if(!products.length){alert('Add at least one product');return;}
+  const transport=parseFloat(document.getElementById('f_transport').value)||0;
+  const gst=document.getElementById('f_gst').checked?sub*0.18:0;
+  const total=sub+transport+gst;
+  const recv1=parseFloat(document.getElementById('f_recv1').value)||0;
+  const newSR=Math.max(...allOrders.map(o=>o.sr))+1;
+  const newOrder={sr:newSR,date,client,phone,architect:document.getElementById('f_arch').value||'-',employee:document.getElementById('f_employee').value,location:document.getElementById('f_location').value,site:document.getElementById('f_site').value,payment_mode:document.getElementById('f_payment').value,total_amount:total,total_received:recv1,pending:-(total-recv1),dispatch_date:'',install_date:'',order_remarks:document.getElementById('f_status').value,reference:document.getElementById('f_ref').value||'Direct',products};
+  allOrders.unshift(newOrder);
+  filtered=[...allOrders];
+  renderStats();
+  if(currentView==='card') renderCards(); else renderTable();
+  closeAddModal();
+  // Reset form
+  document.getElementById('f_client').value='';document.getElementById('f_phone').value='';
+  document.getElementById('productsContainer').innerHTML='';productCount=0;
+  addProductRow();
+  alert(`✅ Order #${newSR} for ${client} added successfully!\n\n💡 NEXT: Copy this data to your Google Sheet using the template below.`);
+}
+
+// ── EXPORT CSV
+function exportCSV() {
+  const rows=[['SR','Date','Client','Phone','Architect','Employee','Location','Site','Products','Mode','Total Amount','Received','Pending','Status','Reference']];
+  allOrders.forEach(o=>{
+    rows.push([o.sr,o.date,o.client,o.phone,o.architect,o.employee,o.location,'"'+o.site+'"','"'+o.products.map(p=>p.product+' '+p.colour).join(' | ')+'"',o.payment_mode,o.total_amount,o.total_received,Math.abs(o.pending),o.order_remarks,o.reference]);
+  });
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='AMROCK_Orders_2026.csv';
+  a.click();
+}
 </script>
 </body>
 </html>
