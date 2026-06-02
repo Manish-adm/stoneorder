@@ -281,7 +281,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 
 <div id="custBanner" class="cust-banner" style="display:none">Your orders — Contact AMROCK: <strong>+91 99099 76153</strong></div>
 <div id="errBar" class="err-bar" style="display:none"><span id="errMsg"></span><button onclick="this.parentElement.style.display='none'">✕</button></div>
-<div id="sourceLockBanner" style="background:#E8F5E9;border-bottom:2px solid #2E7D32;padding:7px 16px;font-size:11px;color:#1B5E20;font-weight:600;">SOURCE LOCKED: Google Sheet <span style="font-family:monospace">1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA</span> / Tab <span style="font-family:monospace">ORDER_2026</span> — No Apps Script / No Old Sheet</div>
 
 
 <!-- NAV TABS (master/employee only) -->
@@ -372,13 +371,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 <script>
 const SOURCE_SHEET_ID='1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA';
 const SOURCE_SHEET_NAME='ORDER_2026';
-const SOURCE_VERSION='ORDER_2026_ONLY_2026_06_02';
+const SOURCE_VERSION='ORDER_2026_ONLY_FIXED_DETAIL_PRINT_2026_06_02';
 console.log('AMROCK Dashboard Source:', SOURCE_VERSION, SOURCE_SHEET_ID, SOURCE_SHEET_NAME);
 const USERS={'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'Krishna',access:'all'},'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},'yash':{pass:'2528',role:'master',name:'Yash',emp:'all',access:'all'},'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'Pratham',access:'emp'},'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'Dealer',access:'emp'},'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'Evara',access:'emp'}};
 
 let currentUser=null,allOrders=[],filtered=[],currentView='card',drActive='all';
 const fmt=n=>'₹'+Math.abs(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:0});
 const q=v=>JSON.stringify(String(v??''));
+const escAttr=v=>String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const getOrder=sr=>allOrders.find(x=>String(x.sr)===String(sr));
 const clean=v=>String(v??'').trim();
 const num=v=>{const n=parseFloat(clean(v).replace(/[^0-9.\-]/g,''));return isNaN(n)?0:n;};
 const phone=v=>clean(v).replace(/\D/g,'').slice(-10)||'-';
@@ -572,7 +573,7 @@ function renderCards(){
   cv.innerHTML=filtered.map(o=>{
     const pct=o.total_amount>0?Math.min(100,Math.round(o.total_received/o.total_amount*100)):100;
     const p2=o.products.slice(0,2);const more=o.products.length-2;
-    return`<div class="order-card" onclick="openDetail(${q(o.sr)})">
+    return`<div class="order-card" data-sr="${escAttr(o.sr)}">
       <div class="card-head">
         <div><div class="csr">SR #${o.sr} · ${o.employee}</div><div class="cname">${o.client}</div><div class="cdate">${o.date}</div></div>
         ${sPill(o.order_remarks)}
@@ -588,12 +589,15 @@ function renderCards(){
       <div class="card-foot">
         <div class="pinfo"><div class="pl">Total</div><div class="ptotal">${fmt(o.total_amount)}</div><div class="ppend ${o.pending<-10?'pd':'pz'}">${o.pending<-10?fmt(o.pending)+' Due':'✓ Clear'}</div></div>
         <div class="abtns">
-          ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="event.stopPropagation();sendWA(${q(o.sr)})" title="WhatsApp">💬</button>`:''}
-          ${isMaster?`<button class="ibtn pdf" onclick="event.stopPropagation();generatePDF(${q(o.sr)})" title="Invoice PDF">📄</button>`:''}
+          ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" data-sr="${escAttr(o.sr)}" onclick="event.stopPropagation();sendWA(this.dataset.sr)" title="WhatsApp">💬</button>`:''}
+          ${isMaster?`<button class="ibtn pdf" data-sr="${escAttr(o.sr)}" onclick="event.stopPropagation();generatePDF(this.dataset.sr)" title="Invoice PDF">📄</button>`:''}
         </div>
       </div>
     </div>`;
   }).join('');
+  cv.querySelectorAll('.order-card').forEach(card=>{
+    card.addEventListener('click',()=>openDetail(card.dataset.sr));
+  });
 }
 
 // ── TABLE
@@ -618,7 +622,7 @@ function renderTable(){
 
 // ── DETAIL MODAL
 function openDetail(sr){
-  const o=allOrders.find(x=>String(x.sr)===String(sr));if(!o)return;
+  const o=getOrder(sr);if(!o)return;
   const isMaster=currentUser.role==='master';
   document.getElementById('detTitle').textContent=`#${o.sr} — ${o.client}`;
   const wa=buildWAMsg(o);
@@ -680,7 +684,7 @@ function buildWAMsg(o){
   const instLine=o.install_date?`\nInstall Date   : ${o.install_date}`:'';
   return`Namaste *${o.client}* Ji\n\nThis is *AMROCK Stone* — Order Update\n${D}\n\n*Order No  : #${o.sr}*\nDate       : ${o.date}\nSite       : ${o.site}\nLocation   : ${o.location}\n\n${D}\n*PRODUCTS ORDERED*\n${D}\n${prods}\n\n${D}\n*ORDER SUMMARY*\n${D}\nOrder Value    : *Rs.${o.total_amount.toLocaleString('en-IN')}*\nAmount Paid    : Rs.${o.total_received.toLocaleString('en-IN')}\n${isPend?`Balance Due    : *Rs.${Math.abs(o.pending).toLocaleString('en-IN')}*`:`Balance        : CLEAR`}\n\n${D}\n*STATUS: ${statusText}*\n${statusIcon}${dispLine}${instLine}\n\n${D}\n${payBlock}\n\nCall / WhatsApp : *+91 99099 76153*\nWebsite        : www.amrockstone.com\n\nThank you,\n— *AMROCK Stone Team*`;
 }
-function sendWA(sr){const o=allOrders.find(x=>String(x.sr)===String(sr));if(!o||!o.phone||o.phone==='-')return;window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(buildWAMsg(o))}`,'_blank');}
+function sendWA(sr){const o=getOrder(sr);if(!o||!o.phone||o.phone==='-')return;window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(buildWAMsg(o))}`,'_blank');}
 function openPendingAll(){
   const pen=allOrders.filter(o=>o.pending<-10&&o.phone&&o.phone!=='-');
   if(!pen.length){alert('No pending payment orders!');return;}
@@ -693,7 +697,7 @@ function openPendingAll(){
 
 // ── PDF INVOICE
 function generatePDF(sr){
-  const o=allOrders.find(x=>String(x.sr)===String(sr));if(!o)return;
+  const o=getOrder(sr);if(!o)return;
   const prodRows=o.products.map((p,i)=>`<tr><td>${i+1}</td><td>${p.product}</td><td>${p.colour||'—'}</td><td style="text-align:right">${p.sqft}</td><td style="text-align:right">₹${p.price.toLocaleString('en-IN')}</td><td style="text-align:right"><strong>₹${p.total.toLocaleString('en-IN')}</strong></td></tr>`).join('');
   const isPend=o.pending<-10;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice #${o.sr}</title>
@@ -730,7 +734,7 @@ function generatePDF(sr){
   </style></head><body>
   <div class="no-print" style="background:#C62828;color:white;padding:8px 16px;margin:-30px -30px 20px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
     <span>Invoice #${o.sr} — ${o.client}</span>
-    <button onclick="window.print()" style="background:white;color:#C62828;border:none;padding:5px 14px;border-radius:4px;font-weight:700;cursor:pointer;">🖨 Print / Save PDF</button>
+    <button onclick="window.focus();setTimeout(()=>window.print(),50)" style="background:white;color:#C62828;border:none;padding:5px 14px;border-radius:4px;font-weight:700;cursor:pointer;">🖨 Print / Save PDF</button>
   </div>
   <div class="header">
     <div><div class="brand">AM<span>ROCK</span> STONE</div><div class="brand-sub">Composite Cladding & Natural Stone</div><div class="brand-addr">B-1101 Westgate, Nr. YMCA Club, S.G. Highway<br>Ahmedabad - 380015, Gujarat, India<br>+91 99099 76153 · www.amrockstone.com</div></div>
@@ -774,7 +778,12 @@ function generatePDF(sr){
   ${o.adhesive?`<div style="margin-top:12px;font-size:11px;color:#888;padding:8px 12px;background:#F5F5F5;border-radius:6px;"><strong>Adhesive:</strong> ${o.adhesive} ${o.bag?'· '+o.bag:''}</div>`:''}
   <div class="footer"><div><strong>AMROCK Stone</strong> · B-1101 Westgate, S.G. Highway, Ahmedabad<br>GSTIN: _____________ · PAN: _____________</div><div style="text-align:right">Thank you for your business!<br>Payment via: Cash / Bank Transfer / Cheque<br>Bank: _____________</div></div>
   </body></html>`;
-  const w=window.open('','_blank','width=800,height=700');w.document.write(html);
+  const w=window.open('','_blank','width=800,height=700');
+  if(!w){alert('Popup blocked. Please allow popups for this dashboard.');return;}
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>{try{w.focus();}catch(e){}},250);
 }
 
 // ── ANALYTICS
