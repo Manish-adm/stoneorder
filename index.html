@@ -366,6 +366,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 
 <script>
 const WEBAPP_URL='https://script.google.com/macros/s/AKfycbw_yCIstAMf_NkPakqwngRxdnD5SzJeI8FHJZ8vaszwqQVAgU_OOLpFK6fcCGFeOKTl/exec';
+const SOURCE_SHEET_ID='1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA';
 const USERS={'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'Krishna',access:'all'},'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},'yash':{pass:'2528',role:'master',name:'Yash',emp:'all',access:'all'},'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'Pratham',access:'emp'},'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'Dealer',access:'emp'},'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'Evara',access:'emp'}};
 
 let currentUser=null,allOrders=[],filtered=[],currentView='card',drActive='all';
@@ -412,7 +413,7 @@ async function loadOrders(){
   document.getElementById('custView').style.display='none';
   setSyncDot('loading');
   try{
-    const res=await fetch(WEBAPP_URL+'?action=getOrders',{cache:'no-store'});
+    const res=await fetch(WEBAPP_URL+'?action=getOrders&sheetId='+encodeURIComponent(SOURCE_SHEET_ID),{cache:'no-store'});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
     if(data.error)throw new Error(data.error);
