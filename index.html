@@ -371,7 +371,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 <script>
 const SOURCE_SHEET_ID='1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA';
 const SOURCE_SHEET_NAME='ORDER_2026';
-const SOURCE_VERSION='ORDER_2026_ONLY_FIXED_DETAIL_PRINT_2026_06_02';
+const SOURCE_VERSION='ORDER_2026_COLUMN_INDEX_FIXED_2026_06_03';
 console.log('AMROCK Dashboard Source:', SOURCE_VERSION, SOURCE_SHEET_ID, SOURCE_SHEET_NAME);
 const USERS={'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'Krishna',access:'all'},'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},'yash':{pass:'2528',role:'master',name:'Yash',emp:'all',access:'all'},'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'Pratham',access:'emp'},'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'Dealer',access:'emp'},'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'Evara',access:'emp'}};
 
@@ -408,40 +408,121 @@ function parseCSV(text){
 }
 function buildOrdersFromRows(rows){
   if(!rows.length)return[];
-  // Fixed structure as provided by user. Duplicate "Amount" columns are handled by position.
-  const C={order_no:0,date:1,client:2,phone:3,architect:4,architect_phone:5,reference:6,employee:7,product:8,colour:9,site:10,location:11,payment_mode:12,sqft:13,price:14,total:15,transport:16,gst:17,total_amount:18,recv1_date:19,recv1_amt:20,recv2_date:21,recv2_amt:22,round_off:23,total_received:24,pending:25,adhesive:26,bag:27,dispatch_date:28,installation_by:29,install_date:30,order_remarks:31,consideration_date:32,consideration_amount:33,consideration_mode:34,photoshoot:35,other_remarks:36};
-  const data=rows.slice(1); const map=new Map();
+  // ORDER_2026 fixed column indexing as per current sheet format given by user.
+  // Duplicate "Amount" columns are handled strictly by column position.
+  const C={
+    order_no:0,date:1,client:2,phone:3,architect:4,architect_phone:5,
+    site:6,location:7,reference:8,employee:9,product:10,colour:11,
+    sqft:12,price:13,total:14,transport:15,gst:16,total_amount:17,
+    payment_mode:18,recv1_date:19,recv1_amt:20,recv2_date:21,recv2_amt:22,
+    round_off:23,total_received:24,pending:25,adhesive:26,bag:27,
+    dispatch_date:28,installation_by:29,install_date:30,order_remarks:31,
+    consideration_date:32,consideration_amount:33,consideration_mode:34,photoshoot:35,other_remarks:36
+  };
+  const data=rows.slice(1);
+  const map=new Map();
+  let lastOrderNo='';
+
   data.forEach((r,idx)=>{
-    const orderNo=clean(r[C.order_no])||String(idx+1);
+    let orderNo=clean(r[C.order_no]);
+    if(orderNo)lastOrderNo=orderNo;
+    else orderNo=lastOrderNo||String(idx+1);
+    if(!orderNo)return;
+
     if(!map.has(orderNo)){
       map.set(orderNo,{
-        sr:orderNo,order_no:orderNo,date:parseDateISO(r[C.date]),client:clean(r[C.client])||'-',phone:phone(r[C.phone]),
-        architect:clean(r[C.architect])||'-',architect_phone:phone(r[C.architect_phone]),reference:clean(r[C.reference])||'-',
-        employee:clean(r[C.employee])||'-',site:clean(r[C.site])||'-',location:clean(r[C.location])||'-',payment_mode:clean(r[C.payment_mode])||'-',
-        transport:num(r[C.transport]),gst:num(r[C.gst]),total_amount:num(r[C.total_amount]),recv1_date:parseDateISO(r[C.recv1_date]),recv1_amt:num(r[C.recv1_amt]),
-        recv2_date:parseDateISO(r[C.recv2_date]),recv2_amt:num(r[C.recv2_amt]),round_off:num(r[C.round_off]),total_received:num(r[C.total_received]),pending:num(r[C.pending]),
-        adhesive:clean(r[C.adhesive]),bag:clean(r[C.bag]),dispatch_date:parseDateISO(r[C.dispatch_date]),installation_by:clean(r[C.installation_by]),
-        install_date:parseDateISO(r[C.install_date]),order_remarks:clean(r[C.order_remarks])||'Material in Production',consideration_date:parseDateISO(r[C.consideration_date]),
-        consideration_amount:num(r[C.consideration_amount]),consideration_mode:clean(r[C.consideration_mode]),photoshoot:clean(r[C.photoshoot]),other_remarks:clean(r[C.other_remarks]),products:[]
+        sr:orderNo,order_no:orderNo,
+        date:parseDateISO(r[C.date]),
+        client:clean(r[C.client])||'-',
+        phone:phone(r[C.phone]),
+        architect:clean(r[C.architect])||'-',
+        architect_phone:phone(r[C.architect_phone]),
+        site:clean(r[C.site])||'-',
+        location:clean(r[C.location])||'-',
+        reference:clean(r[C.reference])||'-',
+        employee:clean(r[C.employee])||'-',
+        payment_mode:clean(r[C.payment_mode])||'-',
+        transport:0,gst:0,round_off:0,
+        sheet_total_amount:0,total_amount:0,
+        recv1_date:parseDateISO(r[C.recv1_date]),recv1_amt:0,
+        recv2_date:parseDateISO(r[C.recv2_date]),recv2_amt:0,
+        sheet_total_received:0,total_received:0,
+        sheet_pending:0,pending:0,
+        adhesive:clean(r[C.adhesive]),bag:clean(r[C.bag]),
+        dispatch_date:parseDateISO(r[C.dispatch_date]),
+        installation_by:clean(r[C.installation_by]),
+        install_date:parseDateISO(r[C.install_date]),
+        order_remarks:clean(r[C.order_remarks])||'Received',
+        consideration_date:parseDateISO(r[C.consideration_date]),
+        expected_date:parseDateISO(r[C.consideration_date]),
+        consideration_amount:0,
+        consideration_mode:clean(r[C.consideration_mode]),
+        photoshoot:clean(r[C.photoshoot]),
+        other_remarks:clean(r[C.other_remarks]),
+        products:[]
       });
     }
+
     const o=map.get(orderNo);
-    const ptotal=num(r[C.total]);
-    if(clean(r[C.product])||clean(r[C.colour])||num(r[C.sqft])||num(r[C.price])||ptotal){
-      o.products.push({product:clean(r[C.product])||'-',colour:clean(r[C.colour]),sqft:num(r[C.sqft]),price:num(r[C.price]),total:ptotal});
+
+    // Fill missing order-level data from later rows, but do not overwrite good data with blanks.
+    const fillText=[
+      ['client',C.client],['architect',C.architect],['site',C.site],['location',C.location],
+      ['reference',C.reference],['employee',C.employee],['payment_mode',C.payment_mode],
+      ['adhesive',C.adhesive],['bag',C.bag],['installation_by',C.installation_by],
+      ['order_remarks',C.order_remarks],['consideration_mode',C.consideration_mode],
+      ['photoshoot',C.photoshoot],['other_remarks',C.other_remarks]
+    ];
+    fillText.forEach(([k,i])=>{const v=clean(r[i]);if(v&&(!o[k]||o[k]==='-'||k==='order_remarks'))o[k]=v;});
+    const ph=phone(r[C.phone]); if(ph&&ph!=='-'&&(o.phone==='-'||!o.phone))o.phone=ph;
+    const aph=phone(r[C.architect_phone]); if(aph&&aph!=='-'&&(o.architect_phone==='-'||!o.architect_phone))o.architect_phone=aph;
+    const d=parseDateISO(r[C.date]); if(d&&!o.date)o.date=d;
+    const dd=parseDateISO(r[C.dispatch_date]); if(dd)o.dispatch_date=dd;
+    const id=parseDateISO(r[C.install_date]); if(id)o.install_date=id;
+    const cd=parseDateISO(r[C.consideration_date]); if(cd){o.consideration_date=cd;o.expected_date=cd;}
+
+    // Product line: use row Total, or calculate Sq.Ft. × Price if Total is blank.
+    const sqft=num(r[C.sqft]);
+    const price=num(r[C.price]);
+    let lineTotal=num(r[C.total]);
+    if(!lineTotal&&sqft&&price)lineTotal=sqft*price;
+    if(clean(r[C.product])||clean(r[C.colour])||sqft||price||lineTotal){
+      o.products.push({
+        product:clean(r[C.product])||'-',
+        colour:clean(r[C.colour]),
+        sqft:sqft,
+        price:price,
+        total:lineTotal
+      });
     }
-    // Keep latest non-empty order-level values if later product rows contain updates.
-    ['transport','gst','total_amount','recv1_amt','recv2_amt','round_off','total_received','pending','consideration_amount'].forEach(k=>{const val=num(r[C[k]]);if(val)o[k]=val;});
-    ['dispatch_date','install_date','order_remarks','installation_by','photoshoot','other_remarks'].forEach(k=>{const val=k==='install_date'?parseDateISO(r[C[k]]):k==='dispatch_date'?parseDateISO(r[C[k]]):clean(r[C[k]]);if(val)o[k]=val;});
+
+    // Charges are usually entered only once on the first line of a multi-product order.
+    if(clean(r[C.transport]))o.transport+=num(r[C.transport]);
+    if(clean(r[C.gst]))o.gst+=num(r[C.gst]);
+    if(clean(r[C.round_off]))o.round_off+=num(r[C.round_off]);
+    if(clean(r[C.total_amount]))o.sheet_total_amount+=num(r[C.total_amount]);
+
+    // Payments should not be added repeatedly across product rows; keep latest non-empty values.
+    if(clean(r[C.recv1_date]))o.recv1_date=parseDateISO(r[C.recv1_date]);
+    if(clean(r[C.recv1_amt]))o.recv1_amt=num(r[C.recv1_amt]);
+    if(clean(r[C.recv2_date]))o.recv2_date=parseDateISO(r[C.recv2_date]);
+    if(clean(r[C.recv2_amt]))o.recv2_amt=num(r[C.recv2_amt]);
+    if(clean(r[C.total_received]))o.sheet_total_received=num(r[C.total_received]);
+    if(clean(r[C.pending]))o.sheet_pending=num(r[C.pending]);
+    if(clean(r[C.consideration_amount]))o.consideration_amount=num(r[C.consideration_amount]);
   });
+
   return Array.from(map.values()).map(o=>{
     const prodSum=o.products.reduce((a,p)=>a+p.total,0);
-    if(!o.total_amount)o.total_amount=prodSum+o.transport+o.gst;
-    if(!o.total_received)o.total_received=o.recv1_amt+o.recv2_amt;
-    if(!o.pending)o.pending=o.total_received-o.total_amount; // old dashboard expects negative as pending due
+    const computedTotal=prodSum+o.transport+o.gst+o.round_off;
+    // For grouped multi-product orders, computed total is safer than first-line Total Amount.
+    o.total_amount=computedTotal||o.sheet_total_amount||0;
+    o.total_received=o.sheet_total_received||o.recv1_amt+o.recv2_amt||0;
+    // Old dashboard logic expects negative number as pending due.
+    o.pending=o.total_received-o.total_amount;
     if(!o.products.length)o.products.push({product:'-',colour:'',sqft:0,price:0,total:0});
     return o;
-  }).sort((a,b)=>(b.date||'').localeCompare(a.date||'') || String(b.sr).localeCompare(String(a.sr),undefined,{numeric:true}));
+  }).sort((a,b)=>(a.date||'').localeCompare(b.date||'') || String(a.sr).localeCompare(String(b.sr),undefined,{numeric:true}));
 }
 
 // ── LOGIN
@@ -560,7 +641,18 @@ function renderStats(d){
 }
 
 // ── STATUS PILL
-function sPill(r){if(!r)return`<span class="pill p-o">—</span>`;if(r.includes('Complete'))return`<span class="pill p-c">✓ Done</span>`;if(r.includes('Installation'))return`<span class="pill p-i">Installing</span>`;if(r.includes('Production'))return`<span class="pill p-p">Production</span>`;return`<span class="pill p-o">${r.substring(0,14)}</span>`;}
+function sPill(r){
+  const raw=clean(r); const x=raw.toLowerCase();
+  if(!raw)return`<span class="pill p-o">—</span>`;
+  if(x.includes('done')||x.includes('delivered')||x.includes('complete'))return`<span class="pill p-c">✓ ${raw.substring(0,14)}</span>`;
+  if(x.includes('reject'))return`<span class="pill p-o">Reject</span>`;
+  if(x.includes('accept'))return`<span class="pill p-c">Accept</span>`;
+  if(x.includes('install'))return`<span class="pill p-i">Installation</span>`;
+  if(x.includes('dispatch'))return`<span class="pill p-i">Dispatch</span>`;
+  if(x.includes('production'))return`<span class="pill p-p">Production</span>`;
+  if(x.includes('received')||x.includes('pending'))return`<span class="pill p-o">${raw.substring(0,14)}</span>`;
+  return`<span class="pill p-o">${raw.substring(0,14)}</span>`;
+}
 
 // ── VIEW
 function setView(v){currentView=v;document.getElementById('vbCard').className='vb'+(v==='card'?' active':'');document.getElementById('vbList').className='vb'+(v==='list'?' active':'');document.getElementById('cardView').style.display=v==='card'?'grid':'none';document.getElementById('listView').style.display=v==='list'?'block':'none';if(v==='card')renderCards();else renderTable();}
@@ -638,6 +730,7 @@ function openDetail(sr){
         <div class="ik" style="grid-column:1/-1"><div class="key">Site</div><div class="val">${o.site} — <strong>${o.location}</strong></div></div>
         <div class="ik"><div class="key">Payment Mode</div><div class="val">${o.payment_mode}</div></div>
         <div class="ik"><div class="key">Status</div><div class="val">${sPill(o.order_remarks)}</div></div>
+        ${o.expected_date?`<div class="ik"><div class="key">Expected Date</div><div class="val">${o.expected_date}</div></div>`:''}
         ${o.dispatch_date?`<div class="ik"><div class="key">Dispatched</div><div class="val">${o.dispatch_date}</div></div>`:''}
         ${o.install_date?`<div class="ik"><div class="key">Install Date</div><div class="val">${o.install_date}</div></div>`:''}
       </div>
@@ -754,6 +847,7 @@ function generatePDF(sr){
       <div class="info-row"><span class="info-key">Employee</span><span>${o.employee}</span></div>
       <div class="info-row"><span class="info-key">Reference</span><span>${o.reference||'—'}</span></div>
       <div class="info-row"><span class="info-key">Payment</span><span>${o.payment_mode}</span></div>
+      ${o.expected_date?`<div class="info-row"><span class="info-key">Expected Date</span><span>${o.expected_date}</span></div>`:''}
       ${o.dispatch_date?`<div class="info-row"><span class="info-key">Dispatched</span><span>${o.dispatch_date}</span></div>`:''}
       ${o.install_date?`<div class="info-row"><span class="info-key">Install Date</span><span>${o.install_date}</span></div>`:''}
     </div>
