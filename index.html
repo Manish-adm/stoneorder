@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AMROCK Stone — Dashboard</title>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>AMROCK Stone — ORDER_2026 ONLY</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
@@ -279,6 +282,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 <div id="custBanner" class="cust-banner" style="display:none">Your orders — Contact AMROCK: <strong>+91 99099 76153</strong></div>
 <div id="errBar" class="err-bar" style="display:none"><span id="errMsg"></span><button onclick="this.parentElement.style.display='none'">✕</button></div>
 
+
 <!-- NAV TABS (master/employee only) -->
 <div class="nav-tabs" id="navTabs" style="display:none">
   <button class="ntab active" onclick="showPage('orders',this)">📦 Orders</button>
@@ -365,25 +369,161 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-we
 
 
 <script>
-const SHEET_ID='1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA';
-const SHEET_NAME='ORDER_2026';
-const USERS={
-  'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'KRISHNA',access:'all'},
-  'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},
-  'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},
-  'yash':{pass:'2528',role:'master',name:'Yash',emp:'YASHBHAI',access:'all'},
-  'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'PRATHAM',access:'emp'},
-  'kiran':{pass:'5678',role:'employee',name:'Kiran',emp:'KIRAN',access:'emp'},
-  'chirag':{pass:'4321',role:'employee',name:'Chirag',emp:'CHIRAG',access:'emp'},
-  'het':{pass:'0000',role:'employee',name:'Het',emp:'HET',access:'emp'},
-  'krish':{pass:'1111',role:'employee',name:'Krish',emp:'KRISH',access:'emp'},
-  'dhavalbhai':{pass:'dhaval',role:'employee',name:'Dhavalbhai',emp:'DHAVALBHAI',access:'emp'},
-  'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'EVARA',access:'emp'},
-  'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'DEALER',access:'emp'}
-};
+const SOURCE_SHEET_ID='1-_hsMeF4jJfQ9AyZppyaIZjUGhxEFN9k_O5RwuIiMNA';
+const SOURCE_SHEET_NAME='ORDER_2026';
+const SOURCE_VERSION='ORDER_2026_COLUMN_INDEX_FIXED_2026_06_03';
+console.log('AMROCK Dashboard Source:', SOURCE_VERSION, SOURCE_SHEET_ID, SOURCE_SHEET_NAME);
+const USERS={'krishna':{pass:'9737',role:'master',name:'Krishna',emp:'Krishna',access:'all'},'gaurav':{pass:'11122',role:'master',name:'Gaurav',emp:'all',access:'all'},'manish':{pass:'7870',role:'master',name:'Manish',emp:'all',access:'all'},'yash':{pass:'2528',role:'master',name:'Yash',emp:'all',access:'all'},'pratham':{pass:'1234',role:'employee',name:'Pratham',emp:'Pratham',access:'emp'},'baroda':{pass:'012026',role:'employee',name:'Baroda',emp:'Dealer',access:'emp'},'evara':{pass:'dhaval',role:'employee',name:'Evara/Dhaval',emp:'Evara',access:'emp'}};
 
 let currentUser=null,allOrders=[],filtered=[],currentView='card',drActive='all';
-const fmt=n=>'₹'+Math.abs(n||0).toLocaleString('en-IN',{maximumFractionDigits:0});
+const fmt=n=>'₹'+Math.abs(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:0});
+const q=v=>JSON.stringify(String(v??''));
+const escAttr=v=>String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const getOrder=sr=>allOrders.find(x=>String(x.sr)===String(sr));
+const clean=v=>String(v??'').trim();
+const num=v=>{const n=parseFloat(clean(v).replace(/[^0-9.\-]/g,''));return isNaN(n)?0:n;};
+const phone=v=>clean(v).replace(/\D/g,'').slice(-10)||'-';
+function parseDateISO(v){
+  v=clean(v); if(!v)return'';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
+  let m=v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+  if(m){let y=m[3].length===2?'20'+m[3]:m[3];return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;}
+  const d=new Date(v); if(!isNaN(d))return d.toISOString().slice(0,10);
+  return v;
+}
+function parseCSV(text){
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],n=text[i+1];
+    if(c==='"'){
+      if(q&&n==='"'){cell+='"';i++;}else q=!q;
+    }else if(c===','&&!q){row.push(cell);cell='';}
+    else if((c==='\n'||c==='\r')&&!q){
+      if(c==='\r'&&n==='\n')i++;
+      row.push(cell);rows.push(row);row=[];cell='';
+    }else cell+=c;
+  }
+  if(cell||row.length){row.push(cell);rows.push(row);}
+  return rows.filter(r=>r.some(c=>clean(c)));
+}
+function buildOrdersFromRows(rows){
+  if(!rows.length)return[];
+  // ORDER_2026 fixed column indexing as per current sheet format given by user.
+  // Duplicate "Amount" columns are handled strictly by column position.
+  const C={
+    order_no:0,date:1,client:2,phone:3,architect:4,architect_phone:5,
+    site:6,location:7,reference:8,employee:9,product:10,colour:11,
+    sqft:12,price:13,total:14,transport:15,gst:16,total_amount:17,
+    payment_mode:18,recv1_date:19,recv1_amt:20,recv2_date:21,recv2_amt:22,
+    round_off:23,total_received:24,pending:25,adhesive:26,bag:27,
+    dispatch_date:28,installation_by:29,install_date:30,order_remarks:31,
+    consideration_date:32,consideration_amount:33,consideration_mode:34,photoshoot:35,other_remarks:36
+  };
+  const data=rows.slice(1);
+  const map=new Map();
+  let lastOrderNo='';
+
+  data.forEach((r,idx)=>{
+    let orderNo=clean(r[C.order_no]);
+    if(orderNo)lastOrderNo=orderNo;
+    else orderNo=lastOrderNo||String(idx+1);
+    if(!orderNo)return;
+
+    if(!map.has(orderNo)){
+      map.set(orderNo,{
+        sr:orderNo,order_no:orderNo,
+        date:parseDateISO(r[C.date]),
+        client:clean(r[C.client])||'-',
+        phone:phone(r[C.phone]),
+        architect:clean(r[C.architect])||'-',
+        architect_phone:phone(r[C.architect_phone]),
+        site:clean(r[C.site])||'-',
+        location:clean(r[C.location])||'-',
+        reference:clean(r[C.reference])||'-',
+        employee:clean(r[C.employee])||'-',
+        payment_mode:clean(r[C.payment_mode])||'-',
+        transport:0,gst:0,round_off:0,
+        sheet_total_amount:0,total_amount:0,
+        recv1_date:parseDateISO(r[C.recv1_date]),recv1_amt:0,
+        recv2_date:parseDateISO(r[C.recv2_date]),recv2_amt:0,
+        sheet_total_received:0,total_received:0,
+        sheet_pending:0,pending:0,
+        adhesive:clean(r[C.adhesive]),bag:clean(r[C.bag]),
+        dispatch_date:parseDateISO(r[C.dispatch_date]),
+        installation_by:clean(r[C.installation_by]),
+        install_date:parseDateISO(r[C.install_date]),
+        order_remarks:clean(r[C.order_remarks])||'Received',
+        consideration_date:parseDateISO(r[C.consideration_date]),
+        expected_date:parseDateISO(r[C.consideration_date]),
+        consideration_amount:0,
+        consideration_mode:clean(r[C.consideration_mode]),
+        photoshoot:clean(r[C.photoshoot]),
+        other_remarks:clean(r[C.other_remarks]),
+        products:[]
+      });
+    }
+
+    const o=map.get(orderNo);
+
+    // Fill missing order-level data from later rows, but do not overwrite good data with blanks.
+    const fillText=[
+      ['client',C.client],['architect',C.architect],['site',C.site],['location',C.location],
+      ['reference',C.reference],['employee',C.employee],['payment_mode',C.payment_mode],
+      ['adhesive',C.adhesive],['bag',C.bag],['installation_by',C.installation_by],
+      ['order_remarks',C.order_remarks],['consideration_mode',C.consideration_mode],
+      ['photoshoot',C.photoshoot],['other_remarks',C.other_remarks]
+    ];
+    fillText.forEach(([k,i])=>{const v=clean(r[i]);if(v&&(!o[k]||o[k]==='-'||k==='order_remarks'))o[k]=v;});
+    const ph=phone(r[C.phone]); if(ph&&ph!=='-'&&(o.phone==='-'||!o.phone))o.phone=ph;
+    const aph=phone(r[C.architect_phone]); if(aph&&aph!=='-'&&(o.architect_phone==='-'||!o.architect_phone))o.architect_phone=aph;
+    const d=parseDateISO(r[C.date]); if(d&&!o.date)o.date=d;
+    const dd=parseDateISO(r[C.dispatch_date]); if(dd)o.dispatch_date=dd;
+    const id=parseDateISO(r[C.install_date]); if(id)o.install_date=id;
+    const cd=parseDateISO(r[C.consideration_date]); if(cd){o.consideration_date=cd;o.expected_date=cd;}
+
+    // Product line: use row Total, or calculate Sq.Ft. × Price if Total is blank.
+    const sqft=num(r[C.sqft]);
+    const price=num(r[C.price]);
+    let lineTotal=num(r[C.total]);
+    if(!lineTotal&&sqft&&price)lineTotal=sqft*price;
+    if(clean(r[C.product])||clean(r[C.colour])||sqft||price||lineTotal){
+      o.products.push({
+        product:clean(r[C.product])||'-',
+        colour:clean(r[C.colour]),
+        sqft:sqft,
+        price:price,
+        total:lineTotal
+      });
+    }
+
+    // Charges are usually entered only once on the first line of a multi-product order.
+    if(clean(r[C.transport]))o.transport+=num(r[C.transport]);
+    if(clean(r[C.gst]))o.gst+=num(r[C.gst]);
+    if(clean(r[C.round_off]))o.round_off+=num(r[C.round_off]);
+    if(clean(r[C.total_amount]))o.sheet_total_amount+=num(r[C.total_amount]);
+
+    // Payments should not be added repeatedly across product rows; keep latest non-empty values.
+    if(clean(r[C.recv1_date]))o.recv1_date=parseDateISO(r[C.recv1_date]);
+    if(clean(r[C.recv1_amt]))o.recv1_amt=num(r[C.recv1_amt]);
+    if(clean(r[C.recv2_date]))o.recv2_date=parseDateISO(r[C.recv2_date]);
+    if(clean(r[C.recv2_amt]))o.recv2_amt=num(r[C.recv2_amt]);
+    if(clean(r[C.total_received]))o.sheet_total_received=num(r[C.total_received]);
+    if(clean(r[C.pending]))o.sheet_pending=num(r[C.pending]);
+    if(clean(r[C.consideration_amount]))o.consideration_amount=num(r[C.consideration_amount]);
+  });
+
+  return Array.from(map.values()).map(o=>{
+    const prodSum=o.products.reduce((a,p)=>a+p.total,0);
+    const computedTotal=prodSum+o.transport+o.gst+o.round_off;
+    // For grouped multi-product orders, computed total is safer than first-line Total Amount.
+    o.total_amount=computedTotal||o.sheet_total_amount||0;
+    o.total_received=o.sheet_total_received||o.recv1_amt+o.recv2_amt||0;
+    // Old dashboard logic expects negative number as pending due.
+    o.pending=o.total_received-o.total_amount;
+    if(!o.products.length)o.products.push({product:'-',colour:'',sqft:0,price:0,total:0});
+    return o;
+  }).sort((a,b)=>(a.date||'').localeCompare(b.date||'') || String(a.sr).localeCompare(String(b.sr),undefined,{numeric:true}));
+}
 
 // ── LOGIN
 function doLogin(){
@@ -399,7 +539,7 @@ function startApp(){
   document.getElementById('appPage').style.display='block';
   document.getElementById('uname').textContent=currentUser.name;
   document.getElementById('urole').textContent={master:'Master',employee:'Employee',customer:'Customer'}[currentUser.role];
-  document.getElementById('hSub').textContent=currentUser.role==='customer'?'My Orders':'Order Dashboard · 2026';
+  document.getElementById('hSub').textContent=currentUser.role==='customer'?'My Orders':'Order Dashboard · ORDER_2026';
   if(currentUser.role!=='customer'){
     document.getElementById('refreshBtn').style.display='';
     document.getElementById('navTabs').style.display='';
@@ -418,127 +558,33 @@ function showPage(page,el){
   if(page==='analytics')renderAnalytics();
 }
 
-// ── LOAD — direct Google Sheets CSV (no Apps Script)
+// ── LOAD FROM NEW GOOGLE SHEET ONLY — NO OLD APPS SCRIPT CONNECTION
 async function loadOrders(){
   document.getElementById('loadState').style.display='block';
+  document.getElementById('loadState').innerHTML='<div class="spinner"></div><p>Loading from ORDER_2026 Google Sheet...</p>';
   document.getElementById('cardView').style.display='none';
   document.getElementById('listView').style.display='none';
   document.getElementById('custView').style.display='none';
   setSyncDot('loading');
   try{
-    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&cache=${Date.now()}`;
+    const url=`https://docs.google.com/spreadsheets/d/${SOURCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SOURCE_SHEET_NAME)}&t=${Date.now()}`;
     const res=await fetch(url,{cache:'no-store'});
-    if(!res.ok)throw new Error('HTTP '+res.status+' — Make sure the sheet is shared publicly (View)');
+    if(!res.ok)throw new Error('Google Sheet HTTP '+res.status);
     const csv=await res.text();
-    allOrders=parseCSV(csv);
+    if(csv.trim().startsWith('<'))throw new Error('Sheet is not publicly readable. Share it as Anyone with the link → Viewer.');
+    const rows=parseCSV(csv);
+    allOrders=buildOrdersFromRows(rows);
     populateEmpFilter();
     document.getElementById('loadState').style.display='none';
     if(currentUser.role==='customer'){renderStats(allOrders.filter(o=>o.phone===currentUser.phone));renderCustView();}
     else{setView(currentView);applyFilters();}
     setSyncDot('ok',new Date().toISOString());
   }catch(err){
-    document.getElementById('loadState').innerHTML=`<div style="font-size:36px">⚠</div><h3 style="color:var(--red);margin:10px 0">Could not load</h3><p style="font-size:12px;color:#666;max-width:320px;margin:0 auto">${err.message}</p><p style="font-size:11px;color:#999;margin-top:8px">Ensure sheet is shared: Anyone with link → Viewer</p><button class="btn btn-red" style="margin-top:12px" onclick="loadOrders()">↻ Retry</button>`;
+    document.getElementById('loadState').innerHTML=`<div style="font-size:36px">⚠</div><h3 style="color:var(--red);margin:10px 0">Could not load ORDER_2026</h3><p style="font-size:12px">${err.message}</p><p style="font-size:11px;color:var(--muted);margin-top:8px">Source: ${SOURCE_SHEET_ID} / ${SOURCE_SHEET_NAME}</p><button class="btn btn-red" style="margin-top:12px" onclick="loadOrders()">Retry</button>`;
     setSyncDot('error');showErr('Load failed: '+err.message);
   }
 }
-
-// ── CSV PARSER
-function parseCSVLine(line){
-  const result=[];let cur='';let inQ=false;
-  for(let i=0;i<line.length;i++){
-    const c=line[i];
-    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else{inQ=!inQ;}}
-    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
-    else{cur+=c;}
-  }
-  result.push(cur.trim());
-  return result;
-}
-
-function n(v){return parseFloat((v||'').toString().replace(/[₹,\s]/g,''))||0;}
-function d(v){
-  // Normalise DD/MM/YYYY or MM/DD/YYYY or YYYY-MM-DD → YYYY-MM-DD
-  v=(v||'').trim();
-  if(!v||v==='-')return '';
-  if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
-  const p=v.split(/[\/\-]/);
-  if(p.length===3){
-    if(p[2].length===4)return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
-    if(p[0].length===4)return`${p[0]}-${p[1].padStart(2,'0')}-${p[2].padStart(2,'0')}`;
-  }
-  return v;
-}
-
-function parseCSV(csv){
-  const lines=csv.split('\n').filter(l=>l.trim());
-  if(lines.length<2)return[];
-  // Skip header row (row 0)
-  const rows=lines.slice(1);
-
-  // Group rows by ORDER NO — same order no = multiple products
-  const orderMap=new Map();
-  rows.forEach(line=>{
-    const c=parseCSVLine(line);
-    const orderNo=(c[0]||'').replace(/"/g,'').trim();
-    if(!orderNo||orderNo==='-'||orderNo==='ORDER NO.')return;
-
-    const srNum=parseInt(orderNo)||0;
-    const dateVal=d((c[1]||'').replace(/"/g,'').trim());
-    const product=(c[8]||'').replace(/"/g,'').trim();
-    const colour=(c[9]||'').replace(/"/g,'').trim();
-    const sqft=n(c[13]);
-    const price=n(c[14]);
-    const rowTotal=n(c[15]);
-
-    if(!orderMap.has(orderNo)){
-      orderMap.set(orderNo,{
-        sr: srNum,
-        order_no: orderNo,
-        date: dateVal,
-        client: (c[2]||'').replace(/"/g,'').trim(),
-        phone: (c[3]||'').replace(/"/g,'').trim(),
-        architect: (c[4]||'').replace(/"/g,'').trim(),
-        architect_phone: (c[5]||'').replace(/"/g,'').trim(),
-        reference: (c[6]||'').replace(/"/g,'').trim(),
-        employee: (c[7]||'').replace(/"/g,'').trim(),
-        site: (c[10]||'').replace(/"/g,'').trim(),
-        location: (c[11]||'').replace(/"/g,'').trim(),
-        payment_mode: (c[12]||'').replace(/"/g,'').trim(),
-        transport: n(c[16]),
-        gst: n(c[17]),
-        total_amount: n(c[18]),
-        recv1_date: d((c[19]||'').replace(/"/g,'').trim()),
-        recv1_amt: n(c[20]),
-        recv2_date: d((c[21]||'').replace(/"/g,'').trim()),
-        recv2_amt: n(c[22]),
-        round_off: n(c[23]),
-        total_received: n(c[24]),
-        pending: -(n(c[25])),   // store as negative so existing logic (pending < -10) works
-        adhesive: (c[26]||'').replace(/"/g,'').trim(),
-        bag: (c[27]||'').replace(/"/g,'').trim(),
-        dispatch_date: d((c[28]||'').replace(/"/g,'').trim()),
-        install_by: (c[29]||'').replace(/"/g,'').trim(),
-        install_date: d((c[30]||'').replace(/"/g,'').trim()),
-        order_remarks: (c[31]||'').replace(/"/g,'').trim(),
-        consideration_date: d((c[32]||'').replace(/"/g,'').trim()),
-        consideration_amt: n(c[33]),
-        consideration_mode: (c[34]||'').replace(/"/g,'').trim(),
-        photoshoot: (c[35]||'').replace(/"/g,'').trim(),
-        other_remarks: (c[36]||'').replace(/"/g,'').trim(),
-        products:[]
-      });
-    }
-
-    if(product){
-      orderMap.get(orderNo).products.push({product,colour,sqft,price,total:rowTotal||sqft*price});
-    }
-  });
-
-  return Array.from(orderMap.values())
-    .filter(o=>o.client)
-    .sort((a,b)=>b.sr-a.sr);
-}
-function setSyncDot(s,ts){const el=document.getElementById('syncDot');if(s==='ok'){const t=ts?new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'';el.textContent=`⬤ Synced ${t}`;el.style.color='#25D366';}else if(s==='loading'){el.textContent='⬤ Loading...';el.style.color='#FF9800';}else{el.textContent='⬤ Error';el.style.color='#EF5350';}}
+function setSyncDot(s,ts){const el=document.getElementById('syncDot');if(s==='ok'){const t=ts?new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'';el.textContent=`⬤ ${t}`;el.style.color='#25D366';}else if(s==='loading'){el.textContent='⬤ ...';el.style.color='#FF9800';}else{el.textContent='⬤ Err';el.style.color='#EF5350';}}
 
 // ── DATE RANGE
 function setDR(r,el){drActive=r;document.querySelectorAll('.dpill').forEach(p=>p.classList.remove('active'));if(el)el.classList.add('active');applyFilters();}
@@ -563,7 +609,7 @@ function applyFilters(){
   const emp=document.getElementById('empFilter').value;
   const pay=document.getElementById('payFilter').value;
   const[df,dt]=getDateBounds();
-  let base=currentUser.access==='all'?allOrders:allOrders.filter(o=>currentUser.access==='emp'?o.employee.toUpperCase()===currentUser.emp.toUpperCase():o.phone===currentUser.phone);
+  let base=currentUser.access==='all'?allOrders:allOrders.filter(o=>currentUser.access==='emp'?o.employee===currentUser.emp:o.phone===currentUser.phone);
   filtered=base.filter(o=>{
     if(q){const h=[o.client,o.location,o.site,o.architect,o.reference,o.employee,...o.products.map(p=>p.product+' '+p.colour)].join(' ').toLowerCase();if(!h.includes(q))return false;}
     if(st&&o.order_remarks!==st)return false;
@@ -595,7 +641,18 @@ function renderStats(d){
 }
 
 // ── STATUS PILL
-function sPill(r){if(!r)return`<span class="pill p-o">—</span>`;if(r.includes('Complete'))return`<span class="pill p-c">✓ Done</span>`;if(r.includes('Installation'))return`<span class="pill p-i">Installing</span>`;if(r.includes('Production'))return`<span class="pill p-p">Production</span>`;return`<span class="pill p-o">${r.substring(0,14)}</span>`;}
+function sPill(r){
+  const raw=clean(r); const x=raw.toLowerCase();
+  if(!raw)return`<span class="pill p-o">—</span>`;
+  if(x.includes('done')||x.includes('delivered')||x.includes('complete'))return`<span class="pill p-c">✓ ${raw.substring(0,14)}</span>`;
+  if(x.includes('reject'))return`<span class="pill p-o">Reject</span>`;
+  if(x.includes('accept'))return`<span class="pill p-c">Accept</span>`;
+  if(x.includes('install'))return`<span class="pill p-i">Installation</span>`;
+  if(x.includes('dispatch'))return`<span class="pill p-i">Dispatch</span>`;
+  if(x.includes('production'))return`<span class="pill p-p">Production</span>`;
+  if(x.includes('received')||x.includes('pending'))return`<span class="pill p-o">${raw.substring(0,14)}</span>`;
+  return`<span class="pill p-o">${raw.substring(0,14)}</span>`;
+}
 
 // ── VIEW
 function setView(v){currentView=v;document.getElementById('vbCard').className='vb'+(v==='card'?' active':'');document.getElementById('vbList').className='vb'+(v==='list'?' active':'');document.getElementById('cardView').style.display=v==='card'?'grid':'none';document.getElementById('listView').style.display=v==='list'?'block':'none';if(v==='card')renderCards();else renderTable();}
@@ -608,7 +665,7 @@ function renderCards(){
   cv.innerHTML=filtered.map(o=>{
     const pct=o.total_amount>0?Math.min(100,Math.round(o.total_received/o.total_amount*100)):100;
     const p2=o.products.slice(0,2);const more=o.products.length-2;
-    return`<div class="order-card" onclick="openDetail(${o.sr})">
+    return`<div class="order-card" data-sr="${escAttr(o.sr)}">
       <div class="card-head">
         <div><div class="csr">SR #${o.sr} · ${o.employee}</div><div class="cname">${o.client}</div><div class="cdate">${o.date}</div></div>
         ${sPill(o.order_remarks)}
@@ -624,12 +681,15 @@ function renderCards(){
       <div class="card-foot">
         <div class="pinfo"><div class="pl">Total</div><div class="ptotal">${fmt(o.total_amount)}</div><div class="ppend ${o.pending<-10?'pd':'pz'}">${o.pending<-10?fmt(o.pending)+' Due':'✓ Clear'}</div></div>
         <div class="abtns">
-          ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="event.stopPropagation();sendWA(${o.sr})" title="WhatsApp">💬</button>`:''}
-          ${isMaster?`<button class="ibtn pdf" onclick="event.stopPropagation();generatePDF(${o.sr})" title="Invoice PDF">📄</button>`:''}
+          ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" data-sr="${escAttr(o.sr)}" onclick="event.stopPropagation();sendWA(this.dataset.sr)" title="WhatsApp">💬</button>`:''}
+          ${isMaster?`<button class="ibtn pdf" data-sr="${escAttr(o.sr)}" onclick="event.stopPropagation();generatePDF(this.dataset.sr)" title="Invoice PDF">📄</button>`:''}
         </div>
       </div>
     </div>`;
   }).join('');
+  cv.querySelectorAll('.order-card').forEach(card=>{
+    card.addEventListener('click',()=>openDetail(card.dataset.sr));
+  });
 }
 
 // ── TABLE
@@ -646,15 +706,15 @@ function renderTable(){
     <td class="${o.pending<-10?'t-r':'t-g'}">${o.pending<-10?fmt(o.pending)+' Due':'✓ Clear'}</td>
     <td>${sPill(o.order_remarks)}</td>
     <td><div style="display:flex;gap:3px;">
-      ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="sendWA(${o.sr})">💬</button>`:''}
-      ${isMaster?`<button class="ibtn pdf" onclick="generatePDF(${o.sr})">📄</button>`:''}
+      ${o.phone&&o.phone!=='-'?`<button class="ibtn wa" onclick="sendWA(${q(o.sr)})">💬</button>`:''}
+      ${isMaster?`<button class="ibtn pdf" onclick="generatePDF(${q(o.sr)})">📄</button>`:''}
     </div></td>
   </tr>`).join('');
 }
 
 // ── DETAIL MODAL
 function openDetail(sr){
-  const o=allOrders.find(x=>x.sr===sr);if(!o)return;
+  const o=getOrder(sr);if(!o)return;
   const isMaster=currentUser.role==='master';
   document.getElementById('detTitle').textContent=`#${o.sr} — ${o.client}`;
   const wa=buildWAMsg(o);
@@ -670,6 +730,7 @@ function openDetail(sr){
         <div class="ik" style="grid-column:1/-1"><div class="key">Site</div><div class="val">${o.site} — <strong>${o.location}</strong></div></div>
         <div class="ik"><div class="key">Payment Mode</div><div class="val">${o.payment_mode}</div></div>
         <div class="ik"><div class="key">Status</div><div class="val">${sPill(o.order_remarks)}</div></div>
+        ${o.expected_date?`<div class="ik"><div class="key">Expected Date</div><div class="val">${o.expected_date}</div></div>`:''}
         ${o.dispatch_date?`<div class="ik"><div class="key">Dispatched</div><div class="val">${o.dispatch_date}</div></div>`:''}
         ${o.install_date?`<div class="ik"><div class="key">Install Date</div><div class="val">${o.install_date}</div></div>`:''}
       </div>
@@ -695,7 +756,7 @@ function openDetail(sr){
       </div></div>`:''}
     <div style="display:flex;gap:8px;margin-top:10px;">
       <button class="btn btn-ghost" style="flex:1;color:var(--text);" onclick="closeDet()">Close</button>
-      ${isMaster?`<button class="btn btn-red" style="flex:1;" onclick="closeDet();generatePDF(${o.sr})">📄 PDF</button>`:''}
+      ${isMaster?`<button class="btn btn-red" style="flex:1;" onclick="closeDet();generatePDF(${q(o.sr)})">📄 PDF</button>`:''}
     </div>`;
   document.getElementById('detOv').classList.add('open');
 }
@@ -716,7 +777,7 @@ function buildWAMsg(o){
   const instLine=o.install_date?`\nInstall Date   : ${o.install_date}`:'';
   return`Namaste *${o.client}* Ji\n\nThis is *AMROCK Stone* — Order Update\n${D}\n\n*Order No  : #${o.sr}*\nDate       : ${o.date}\nSite       : ${o.site}\nLocation   : ${o.location}\n\n${D}\n*PRODUCTS ORDERED*\n${D}\n${prods}\n\n${D}\n*ORDER SUMMARY*\n${D}\nOrder Value    : *Rs.${o.total_amount.toLocaleString('en-IN')}*\nAmount Paid    : Rs.${o.total_received.toLocaleString('en-IN')}\n${isPend?`Balance Due    : *Rs.${Math.abs(o.pending).toLocaleString('en-IN')}*`:`Balance        : CLEAR`}\n\n${D}\n*STATUS: ${statusText}*\n${statusIcon}${dispLine}${instLine}\n\n${D}\n${payBlock}\n\nCall / WhatsApp : *+91 99099 76153*\nWebsite        : www.amrockstone.com\n\nThank you,\n— *AMROCK Stone Team*`;
 }
-function sendWA(sr){const o=allOrders.find(x=>x.sr===sr);if(!o||!o.phone||o.phone==='-')return;window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(buildWAMsg(o))}`,'_blank');}
+function sendWA(sr){const o=getOrder(sr);if(!o||!o.phone||o.phone==='-')return;window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(buildWAMsg(o))}`,'_blank');}
 function openPendingAll(){
   const pen=allOrders.filter(o=>o.pending<-10&&o.phone&&o.phone!=='-');
   if(!pen.length){alert('No pending payment orders!');return;}
@@ -729,7 +790,7 @@ function openPendingAll(){
 
 // ── PDF INVOICE
 function generatePDF(sr){
-  const o=allOrders.find(x=>x.sr===sr);if(!o)return;
+  const o=getOrder(sr);if(!o)return;
   const prodRows=o.products.map((p,i)=>`<tr><td>${i+1}</td><td>${p.product}</td><td>${p.colour||'—'}</td><td style="text-align:right">${p.sqft}</td><td style="text-align:right">₹${p.price.toLocaleString('en-IN')}</td><td style="text-align:right"><strong>₹${p.total.toLocaleString('en-IN')}</strong></td></tr>`).join('');
   const isPend=o.pending<-10;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice #${o.sr}</title>
@@ -766,7 +827,7 @@ function generatePDF(sr){
   </style></head><body>
   <div class="no-print" style="background:#C62828;color:white;padding:8px 16px;margin:-30px -30px 20px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
     <span>Invoice #${o.sr} — ${o.client}</span>
-    <button onclick="window.print()" style="background:white;color:#C62828;border:none;padding:5px 14px;border-radius:4px;font-weight:700;cursor:pointer;">🖨 Print / Save PDF</button>
+    <button onclick="window.focus();setTimeout(()=>window.print(),50)" style="background:white;color:#C62828;border:none;padding:5px 14px;border-radius:4px;font-weight:700;cursor:pointer;">🖨 Print / Save PDF</button>
   </div>
   <div class="header">
     <div><div class="brand">AM<span>ROCK</span> STONE</div><div class="brand-sub">Composite Cladding & Natural Stone</div><div class="brand-addr">B-1101 Westgate, Nr. YMCA Club, S.G. Highway<br>Ahmedabad - 380015, Gujarat, India<br>+91 99099 76153 · www.amrockstone.com</div></div>
@@ -786,6 +847,7 @@ function generatePDF(sr){
       <div class="info-row"><span class="info-key">Employee</span><span>${o.employee}</span></div>
       <div class="info-row"><span class="info-key">Reference</span><span>${o.reference||'—'}</span></div>
       <div class="info-row"><span class="info-key">Payment</span><span>${o.payment_mode}</span></div>
+      ${o.expected_date?`<div class="info-row"><span class="info-key">Expected Date</span><span>${o.expected_date}</span></div>`:''}
       ${o.dispatch_date?`<div class="info-row"><span class="info-key">Dispatched</span><span>${o.dispatch_date}</span></div>`:''}
       ${o.install_date?`<div class="info-row"><span class="info-key">Install Date</span><span>${o.install_date}</span></div>`:''}
     </div>
@@ -810,7 +872,12 @@ function generatePDF(sr){
   ${o.adhesive?`<div style="margin-top:12px;font-size:11px;color:#888;padding:8px 12px;background:#F5F5F5;border-radius:6px;"><strong>Adhesive:</strong> ${o.adhesive} ${o.bag?'· '+o.bag:''}</div>`:''}
   <div class="footer"><div><strong>AMROCK Stone</strong> · B-1101 Westgate, S.G. Highway, Ahmedabad<br>GSTIN: _____________ · PAN: _____________</div><div style="text-align:right">Thank you for your business!<br>Payment via: Cash / Bank Transfer / Cheque<br>Bank: _____________</div></div>
   </body></html>`;
-  const w=window.open('','_blank','width=800,height=700');w.document.write(html);
+  const w=window.open('','_blank','width=800,height=700');
+  if(!w){alert('Popup blocked. Please allow popups for this dashboard.');return;}
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>{try{w.focus();}catch(e){}},250);
 }
 
 // ── ANALYTICS
